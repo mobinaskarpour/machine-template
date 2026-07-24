@@ -1,0 +1,291 @@
+@import "tailwindcss";
+
+/* THE MACHINE — Construction Edition
+   Dark-first · steel / concrete · warm decision · cool intelligence */
+
+:root {
+  /* Surfaces */
+  --void: #0c0e11;
+  --deck: #12151a;
+  --panel: #161a21cc;
+  --slab: #1a1f28;
+  --slab-raised: #222833;
+  --overlay: #0c0e11b3;
+
+  /* Text */
+  --text-primary: #e8eaed;
+  --text-secondary: #9aa3b2;
+  --text-tertiary: #6b7380;
+  --text-inverse: #0c0e11;
+
+  /* Brand — architectural bronze (decision) */
+  --primary: #c4a574;
+  --primary-soft: #c4a57418;
+  --primary-muted: #a88b5c;
+
+  /* AI — cool slate-cyan (intelligence) */
+  --accent: #6b9aab;
+  --accent-soft: #6b9aab18;
+  --accent-muted: #5a8499;
+
+  /* Semantic — muted, calm urgency */
+  --success: #7a9e86;
+  --success-soft: #7a9e8618;
+  --warning: #c4a35a;
+  --warning-soft: #c4a35a18;
+  --danger: #c17b7b;
+  --danger-soft: #c17b7b18;
+  --info: #7a8fa3;
+
+  /* Borders / etch */
+  --etch: #ffffff0f;
+  --etch-strong: #ffffff24;
+  --etch-focus: #c4a57455;
+  --border-hover: #c4a57440;
+
+  /* Interaction */
+  --hover: #ffffff08;
+  --selection: #c4a57422;
+  --focus: #c4a57466;
+  --glow-ai: #6b9aab33;
+  --glow-critical: #c17b7b40;
+  --glow-primary: #c4a57428;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px #00000040;
+  --shadow-md: 0 8px 32px #00000050;
+  --shadow-glow: 0 0 40px var(--glow-ai);
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 24px;
+
+  /* Motion */
+  --duration-hover: 120ms;
+  --duration-button: 180ms;
+  --duration-modal: 280ms;
+  --duration-page: 450ms;
+  --duration-hero: 700ms;
+
+  /* Typography */
+  --text-micro: 11px;
+  --text-caption: 13px;
+  --text-body: 15px;
+  --text-body-lg: 17px;
+  --text-title: 22px;
+  --text-display: 36px;
+  --text-hero: 48px;
+
+  /* Charts */
+  --chart-1: #c4a574;
+  --chart-2: #6b9aab;
+  --chart-3: #7a9e86;
+  --chart-4: #c4a35a;
+  --chart-5: #8b7a9e;
+}
+
+.light {
+  --void: #f4f5f7;
+  --deck: #eceef1;
+  --panel: #ffffffcc;
+  --slab: #ffffff;
+  --slab-raised: #f7f8fa;
+  --overlay: #0c0e1166;
+  --text-primary: #14181f;
+  --text-secondary: #5c6570;
+  --text-tertiary: #8b919a;
+  --etch: #14181f0f;
+  --etch-strong: #14181f1f;
+  --hover: #14181f06;
+  --shadow-sm: 0 1px 2px #14181f0a;
+  --shadow-md: 0 8px 32px #14181f12;
+  --glow-ai: #6b9aab22;
+  --glow-primary: #c4a57418;
+}
+
+@theme inline {
+  --color-void: var(--void);
+  --color-deck: var(--deck);
+  --color-panel: var(--panel);
+  --color-slab: var(--slab);
+  --color-slab-raised: var(--slab-raised);
+  --color-overlay: var(--overlay);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-primary: var(--primary);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-muted: var(--primary-muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-muted: var(--accent-muted);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-etch: var(--etch);
+  --color-etch-strong: var(--etch-strong);
+  --color-etch-focus: var(--etch-focus);
+  --color-border-hover: var(--border-hover);
+  --color-hover: var(--hover);
+  --color-selection: var(--selection);
+  --color-focus: var(--focus);
+  --font-sans: var(--font-vazirmatn);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html.dark,
+html.light {
+  transition:
+    background-color 300ms ease,
+    color 300ms ease;
+}
+
+body {
+  background: var(--void);
+  color: var(--text-primary);
+  font-family: var(--font-vazirmatn), system-ui, sans-serif;
+  font-size: var(--text-body);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Shared interactive surfaces */
+.surface-interactive {
+  transition:
+    border-color var(--duration-hover) ease,
+    background-color var(--duration-hover) ease,
+    color var(--duration-hover) ease,
+    transform var(--duration-hover) ease;
+}
+
+.surface-interactive:hover {
+  border-color: var(--border-hover);
+}
+
+/* Spatial void — architectural depth, not flat */
+.bg-void-depth {
+  background-color: var(--void);
+  background-image:
+    radial-gradient(
+      ellipse 90% 55% at 50% -10%,
+      var(--primary-soft) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 85% 60%,
+      var(--accent-soft) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent 96%,
+      color-mix(in srgb, var(--etch) 40%, transparent) 100%
+    );
+}
+
+/* Faint structural grid */
+.bg-structure {
+  background-image: linear-gradient(
+      var(--etch) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, var(--etch) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 75%);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--slab) 0%,
+    var(--slab-raised) 50%,
+    var(--slab) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+
+.animate-breathe {
+  animation: breathe 4.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-breathe,
+  .shimmer {
+    animation: none !important;
+  }
+}
