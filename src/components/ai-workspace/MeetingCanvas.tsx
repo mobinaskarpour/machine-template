@@ -6,6 +6,7 @@ import { Sparkles } from "lucide-react";
 import type { WorkspaceMessage } from "@/types/ai";
 import { ExecutiveReportView } from "./ExecutiveReportView";
 import { ThinkingState } from "./ThinkingState";
+import { businessActions } from "@/lib/visual-experiences";
 import { spring } from "@/lib/motion";
 import { pageLabels } from "@/config/labels";
 import { cn } from "@/lib/utils";
@@ -53,6 +54,10 @@ export function MeetingCanvas({
             animate={{ opacity: 1 }}
             className="max-w-4xl mx-auto space-y-8"
           >
+            {!thinking && messages.length > 0 && (
+              <BusinessActionBar onAction={onQuestion} />
+            )}
+
             {messages.map((msg) =>
               msg.role === "user" ? (
                 <UserIntent key={msg.id} content={msg.content} />
@@ -82,6 +87,26 @@ export function MeetingCanvas({
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+function BusinessActionBar({ onAction }: { onAction: (q: string) => void }) {
+  return (
+    <div className="sticky top-0 z-10 -mx-1 px-1 py-2 bg-void/80 backdrop-blur-md border-b border-etch/60">
+      <p className="mb-2 text-[10px] text-text-tertiary">اقدام‌های بصری</p>
+      <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+        {businessActions.map((a) => (
+          <button
+            key={a.id}
+            type="button"
+            onClick={() => onAction(a.query)}
+            className="shrink-0 rounded-[8px] border border-etch bg-slab/90 px-2.5 py-1.5 text-[11px] text-text-secondary cursor-pointer hover:border-border-hover hover:text-text-primary transition-colors"
+          >
+            {a.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -127,26 +152,51 @@ function WelcomeState({
         جلسه با رئیس ستاد اجرایی
       </h2>
       <p className="mt-4 max-w-md text-[15px] text-text-secondary leading-relaxed">
-        سؤال بپرسید تا تصویر تصمیم روشن شود. پاسخ‌ها گزارش اجرایی‌اند — نه پیام
-        چت. خارج از مسیر امروز، به تصمیم‌های زنده هدایت می‌شوید.
+        سؤال بپرسید تا تصویر تصمیم روشن شود. پاسخ‌ها تجربه تعاملی‌اند — نه پیام
+        چت.
       </p>
 
-      <div className="mt-10 w-full max-w-xl">
+      <div className="mt-8 w-full max-w-2xl">
+        <p className="mb-3 text-[12px] font-medium text-text-tertiary">
+          تجربه بصری پروژه
+        </p>
+        <div className="flex flex-wrap justify-center gap-2">
+          {businessActions.map((a, i) => (
+            <motion.button
+              key={a.id}
+              type="button"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + i * 0.03, ...spring.gentle }}
+              whileHover={{ y: -2, transition: spring.gentle }}
+              onClick={() => onQuestion(a.query)}
+              className={cn(
+                "rounded-[10px] border border-etch bg-slab/80 px-3.5 py-2",
+                "text-[12px] text-text-secondary cursor-pointer",
+                "hover:border-accent/40 hover:text-text-primary transition-colors duration-[120ms]"
+              )}
+            >
+              {a.label}
+            </motion.button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-8 w-full max-w-xl">
         <p className="mb-3 text-[12px] font-medium text-text-tertiary">
           دغدغه‌های اجرایی اکنون
         </p>
         <div className="flex flex-wrap justify-center gap-2">
-          {questions.map((q, i) => (
+          {questions.slice(0, 4).map((q, i) => (
             <motion.button
               key={q}
               type="button"
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 + i * 0.05, ...spring.gentle }}
-              whileHover={{ y: -2, transition: spring.gentle }}
+              transition={{ delay: 0.25 + i * 0.04, ...spring.gentle }}
               onClick={() => onQuestion(q)}
               className={cn(
-                "rounded-[10px] border border-etch bg-slab/80 px-4 py-2.5",
+                "rounded-[10px] border border-etch bg-void/40 px-4 py-2.5",
                 "text-[13px] text-text-secondary cursor-pointer",
                 "hover:border-border-hover hover:text-text-primary transition-colors duration-[120ms]"
               )}

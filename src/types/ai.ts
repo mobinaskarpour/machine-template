@@ -31,6 +31,33 @@ export type BlockKind =
   | "related-contracts"
   | "related-equipment";
 
+export type VisualExperienceKind =
+  | "executive-chart"
+  | "project-cameras"
+  | "project-images"
+  | "project-videos"
+  | "site-map"
+  | "digital-twin"
+  | "timeline"
+  | "documents"
+  | "risks"
+  | "workflow-card"
+  | "dashboard-card"
+  | "equipment"
+  | "financial-breakdown"
+  | "cashflow"
+  | "forecast"
+  | "vision-analysis";
+
+export interface VisualExperience {
+  id: string;
+  kind: VisualExperienceKind;
+  title: string;
+  subtitle?: string;
+  /** Optional deep-link for CTA inside the card */
+  href?: string;
+}
+
 export interface InsightBlock {
   id: string;
   kind: BlockKind;
@@ -74,6 +101,8 @@ export interface ExecutiveReport {
   citations: Citation[];
   actions: AIAction[];
   discoveries?: DiscoveryCard[];
+  /** 1–3 interactive visual experiences embedded in the response */
+  visuals?: VisualExperience[];
   memoryNote?: string;
 }
 

@@ -5,10 +5,10 @@ import { usePathname } from "next/navigation";
 import {
   Command,
   Sparkles,
-  Layers,
-  Inbox,
   LayoutDashboard,
   GitBranch,
+  Network,
+  Camera,
   type LucideIcon,
 } from "lucide-react";
 import { railItems } from "@/config/labels";
@@ -26,10 +26,10 @@ interface AppShellProps {
 const iconMap: Record<string, LucideIcon> = {
   command: Command,
   sparkles: Sparkles,
-  layers: Layers,
   layout: LayoutDashboard,
   branch: GitBranch,
-  inbox: Inbox,
+  network: Network,
+  camera: Camera,
 };
 
 export function AppShell({ children, pageTitle, dense }: AppShellProps) {

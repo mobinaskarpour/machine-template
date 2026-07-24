@@ -5,6 +5,8 @@ export const pageLabels = {
   chat: "فضای کار هوش مصنوعی",
   dashboards: "داشبوردها",
   workflows: "گردش‌کارها",
+  evidence: "شواهد پروژه",
+  connections: "اتصالات",
   portfolio: "پورتفویو",
   capital: "پول و قرارداد",
   operations: "اجرا و تأمین",
@@ -37,12 +39,12 @@ export const uiLabels = {
   entryHint: "جزئیات در داشبورد تخصصی",
 } as const;
 
-/** Six-item rail — Overview · AI · Dashboards · Workflows · Inbox · Portfolio */
+/** Six-item rail — Overview · AI · Evidence · Dashboards · Workflows · Connections */
 export const railItems = [
   { id: "home", label: pageLabels.home, href: "/", icon: "command" },
   { id: "chat", label: pageLabels.chat, href: "/chat", icon: "sparkles" },
+  { id: "evidence", label: pageLabels.evidence, href: "/evidence", icon: "camera" },
   { id: "dashboards", label: pageLabels.dashboards, href: "/dashboards", icon: "layout" },
   { id: "workflows", label: pageLabels.workflows, href: "/workflows", icon: "branch" },
-  { id: "inbox", label: pageLabels.inbox, href: "/inbox", icon: "inbox" },
-  { id: "portfolio", label: pageLabels.portfolio, href: "/portfolio", icon: "layers" },
+  { id: "connections", label: pageLabels.connections, href: "/connections", icon: "network" },
 ] as const;

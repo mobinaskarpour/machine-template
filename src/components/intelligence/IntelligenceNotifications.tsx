@@ -5,43 +5,33 @@ import { GitBranch, LayoutDashboard, X } from "lucide-react";
 import type { IntelligenceRecommendation } from "@/types/intelligence";
 import { spring } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { toPersianDigits } from "@/lib/persian";
 
+/** Max 1 Workflow + 1 Dashboard — ~40% smaller premium toast cards */
 export function IntelligenceNotifications({
   items,
-  onReview,
-  onDefer,
+  onCreate,
   onDismiss,
 }: {
   items: IntelligenceRecommendation[];
-  onReview: (id: string) => void;
-  onDefer: (id: string) => void;
+  onCreate: (id: string) => void;
   onDismiss: (id: string) => void;
 }) {
-  const workflows = items.filter((i) => i.kind === "workflow");
-  const dashboards = items.filter((i) => i.kind === "dashboard");
+  const workflow = items.find((i) => i.kind === "workflow");
+  const dashboard = items.find((i) => i.kind === "dashboard");
+  const visible = [dashboard, workflow].filter(
+    Boolean
+  ) as IntelligenceRecommendation[];
 
-  if (!items.length) return null;
+  if (!visible.length) return null;
 
   return (
-    <div className="fixed bottom-6 left-6 z-40 flex flex-col gap-3 max-w-[360px] w-full pointer-events-none md:left-24">
+    <div className="fixed bottom-4 left-4 z-40 flex flex-col gap-1.5 max-w-[220px] w-full pointer-events-none md:left-24">
       <AnimatePresence mode="popLayout">
-        {/* Dashboards and workflows rendered as independent stacks */}
-        {dashboards.map((item) => (
-          <RecommendationCard
+        {visible.map((item) => (
+          <SuggestionCard
             key={item.id}
             item={item}
-            onReview={onReview}
-            onDefer={onDefer}
-            onDismiss={onDismiss}
-          />
-        ))}
-        {workflows.map((item) => (
-          <RecommendationCard
-            key={item.id}
-            item={item}
-            onReview={onReview}
-            onDefer={onDefer}
+            onCreate={onCreate}
             onDismiss={onDismiss}
           />
         ))}
@@ -50,15 +40,13 @@ export function IntelligenceNotifications({
   );
 }
 
-function RecommendationCard({
+function SuggestionCard({
   item,
-  onReview,
-  onDefer,
+  onCreate,
   onDismiss,
 }: {
   item: IntelligenceRecommendation;
-  onReview: (id: string) => void;
-  onDefer: (id: string) => void;
+  onCreate: (id: string) => void;
   onDismiss: (id: string) => void;
 }) {
   const isDash = item.kind === "dashboard";
@@ -66,90 +54,66 @@ function RecommendationCard({
   return (
     <motion.article
       layout
-      initial={{ opacity: 0, y: 18, scale: 0.98 }}
+      initial={{ opacity: 0, y: 10, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 10, scale: 0.99 }}
+      exit={{ opacity: 0, y: 6, scale: 0.99 }}
       transition={spring.panel}
       className={cn(
-        "pointer-events-auto rounded-[16px] border backdrop-blur-xl p-5 shadow-[var(--shadow-md)]",
-        isDash ? "border-accent/40 bg-panel" : "border-primary/40 bg-panel",
-        item.status === "deferred" && "opacity-85 border-etch"
+        "pointer-events-auto rounded-[10px] border backdrop-blur-xl px-2.5 py-2 shadow-[var(--shadow-sm)]",
+        isDash ? "border-accent/30 bg-panel/95" : "border-primary/30 bg-panel/95"
       )}
     >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2.5">
-          <div
-            className={cn(
-              "flex h-9 w-9 items-center justify-center rounded-[10px] border",
-              isDash
-                ? "border-accent/30 bg-accent-soft text-accent"
-                : "border-primary/30 bg-primary-soft text-primary"
-            )}
-          >
-            {isDash ? (
-              <LayoutDashboard size={16} strokeWidth={1.6} />
-            ) : (
-              <GitBranch size={16} strokeWidth={1.6} />
-            )}
-          </div>
-          <div>
-            <p className="text-[11px] font-medium text-text-tertiary">
-              {item.status === "deferred"
-                ? "یادآوری هوشمند"
-                : isDash
-                  ? "پیشنهاد داشبورد اجرایی"
-                  : "پیشنهاد گردش‌کار کسب‌وکار"}
-            </p>
-            <p className="text-[10px] text-text-tertiary/80 mt-0.5">
-              بر اساس {toPersianDigits(item.concernCount)} گفتگوی مرتبط
-            </p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => onDismiss(item.id)}
-          className="text-text-tertiary hover:text-text-secondary cursor-pointer"
-          aria-label="بستن"
-        >
-          <X size={14} strokeWidth={1.6} />
-        </button>
-      </div>
-
-      <h3 className="mt-3 text-[16px] font-semibold text-text-primary leading-snug">
-        {item.title}
-      </h3>
-      <p className="mt-2 text-[13px] text-text-secondary leading-relaxed">
-        {item.explanation}
-      </p>
-      <p className="mt-2 text-[13px] text-text-secondary leading-relaxed">
-        <span className="text-text-tertiary">اثر کسب‌وکار: </span>
-        {item.businessImpact}
-      </p>
-      <p className="mt-1 text-[13px] text-primary leading-relaxed">
-        <span className="text-text-tertiary">ارزش مورد انتظار: </span>
-        {item.expectedValue}
-      </p>
-
-      <div className="mt-4 flex gap-2">
-        <button
-          type="button"
-          onClick={() => onReview(item.id)}
+      <div className="flex items-start gap-2">
+        <div
           className={cn(
-            "flex-1 rounded-[10px] px-3 py-2.5 text-[13px] font-medium cursor-pointer transition-colors",
+            "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[6px] border",
             isDash
-              ? "bg-accent text-void hover:opacity-90"
-              : "bg-primary text-text-inverse hover:opacity-90"
+              ? "border-accent/30 bg-accent-soft text-accent"
+              : "border-primary/30 bg-primary-soft text-primary"
           )}
         >
-          {item.primaryCta}
-        </button>
-        <button
-          type="button"
-          onClick={() => onDefer(item.id)}
-          className="rounded-[10px] border border-etch px-3 py-2.5 text-[13px] text-text-tertiary cursor-pointer hover:border-etch-strong"
-        >
-          {item.secondaryCta}
-        </button>
+          {isDash ? (
+            <LayoutDashboard size={10} strokeWidth={1.6} />
+          ) : (
+            <GitBranch size={10} strokeWidth={1.6} />
+          )}
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-1.5">
+            <h3 className="text-[11px] font-semibold text-text-primary leading-snug line-clamp-1">
+              {item.title}
+            </h3>
+            <button
+              type="button"
+              onClick={() => onDismiss(item.id)}
+              className="shrink-0 text-text-tertiary hover:text-text-secondary cursor-pointer"
+              aria-label="بستن"
+            >
+              <X size={10} strokeWidth={1.6} />
+            </button>
+          </div>
+
+          <p className="mt-0.5 text-[9px] text-text-tertiary leading-snug line-clamp-1">
+            {item.explanation}
+          </p>
+          <p className="mt-0.5 text-[9px] text-text-secondary leading-snug line-clamp-1">
+            {item.businessImpact}
+          </p>
+
+          <button
+            type="button"
+            onClick={() => onCreate(item.id)}
+            className={cn(
+              "mt-1.5 w-full rounded-[6px] px-2 py-1 text-[10px] font-medium cursor-pointer transition-opacity hover:opacity-90",
+              isDash
+                ? "bg-accent text-void"
+                : "bg-primary text-text-inverse"
+            )}
+          >
+            ایجاد
+          </button>
+        </div>
       </div>
     </motion.article>
   );

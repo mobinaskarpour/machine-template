@@ -6,10 +6,10 @@ import { motion } from "framer-motion";
 import {
   Command,
   Sparkles,
-  Layers,
-  Inbox,
   LayoutDashboard,
   GitBranch,
+  Network,
+  Camera,
   type LucideIcon,
 } from "lucide-react";
 import { spring } from "@/lib/motion";
@@ -19,10 +19,10 @@ import { cn } from "@/lib/utils";
 const iconMap: Record<string, LucideIcon> = {
   command: Command,
   sparkles: Sparkles,
-  layers: Layers,
   layout: LayoutDashboard,
   branch: GitBranch,
-  inbox: Inbox,
+  network: Network,
+  camera: Camera,
 };
 
 export function ExecutiveRail() {

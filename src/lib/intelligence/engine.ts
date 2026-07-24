@@ -105,7 +105,15 @@ export function deriveRecommendations(
   existing: IntelligenceRecommendation[],
   learning: LearningProfile
 ): IntelligenceRecommendation[] {
-  const created: IntelligenceRecommendation[] = [];
+  /** Per scenario: at most one Workflow + one Dashboard — highest business value only */
+  const active = existing.filter(
+    (r) =>
+      r.status === "proposed" ||
+      r.status === "reviewing" ||
+      r.status === "deferred"
+  );
+  const hasActiveWorkflow = active.some((r) => r.kind === "workflow");
+  const hasActiveDashboard = active.some((r) => r.kind === "dashboard");
 
   const ordered = [...signals].sort((a, b) => {
     const aw = learning.domainWeights[a.domain] ?? 0;
@@ -113,62 +121,64 @@ export function deriveRecommendations(
     return b.strength + bw * 0.4 - (a.strength + aw * 0.4);
   });
 
-  for (const signal of ordered) {
+  const ready = ordered.filter((signal) => {
     const learnedBoost = (learning.domainWeights[signal.domain] ?? 0) >= 2;
-    const ready =
+    return (
       signal.count >= RECURRENCE_THRESHOLD ||
       signal.strength >= STRENGTH_THRESHOLD ||
-      (learnedBoost && signal.count >= 2);
+      (learnedBoost && signal.count >= 2)
+    );
+  });
 
-    if (!ready) continue;
+  if (!ready.length) return [];
 
-    const concept = getDomainConcept(signal.domain);
+  // Best domain by combined strength / learning weight
+  const best = ready[0];
+  const concept = getDomainConcept(best.domain);
+  const created: IntelligenceRecommendation[] = [];
 
-    // Workflow — recurring operational activity
-    if (
-      !alreadyProposed(existing, "workflow", signal.domain) &&
-      !created.some((c) => c.kind === "workflow" && c.domain === signal.domain)
-    ) {
-      const wf = getWorkflowBlueprint(signal.domain);
-      created.push({
-        id: `rec-wf-${signal.domain}-${Date.now()}`,
-        kind: "workflow",
-        domain: signal.domain,
-        title: wf.name,
-        explanation: `سازمان شما ${toPersianDigits(signal.count)} بار درباره «${concept.label}» گفتگو کرده است. ${wf.whyMatters}`,
-        businessImpact: wf.businessValue,
-        expectedValue: wf.expectedRoi,
-        primaryCta: "بررسی پیشنهاد",
-        secondaryCta: "بعداً",
-        status: "proposed",
-        createdAt: Date.now(),
-        concernCount: signal.count,
-        workflow: wf,
-      });
-    }
+  if (
+    !hasActiveWorkflow &&
+    !alreadyProposed(existing, "workflow", best.domain)
+  ) {
+    const wf = getWorkflowBlueprint(best.domain);
+    created.push({
+      id: `rec-wf-${best.domain}-${Date.now()}`,
+      kind: "workflow",
+      domain: best.domain,
+      title: wf.name,
+      explanation: `استانداردسازی عملیات «${concept.label}» پس از تکرار گفتگو.`,
+      businessImpact: wf.businessValue,
+      expectedValue: wf.expectedRoi,
+      primaryCta: "ایجاد",
+      secondaryCta: "بعداً",
+      status: "proposed",
+      createdAt: Date.now(),
+      concernCount: best.count,
+      workflow: wf,
+    });
+  }
 
-    // Dashboard — continuous monitoring need (always independent)
-    if (
-      !alreadyProposed(existing, "dashboard", signal.domain) &&
-      !created.some((c) => c.kind === "dashboard" && c.domain === signal.domain)
-    ) {
-      const db = getDashboardBlueprint(signal.domain);
-      created.push({
-        id: `rec-db-${signal.domain}-${Date.now()}`,
-        kind: "dashboard",
-        domain: signal.domain,
-        title: db.name,
-        explanation: db.whyMonitor,
-        businessImpact: db.executiveValue,
-        expectedValue: db.strategicImpact,
-        primaryCta: "بررسی پیشنهاد",
-        secondaryCta: "بعداً",
-        status: "proposed",
-        createdAt: Date.now(),
-        concernCount: signal.count,
-        dashboard: db,
-      });
-    }
+  if (
+    !hasActiveDashboard &&
+    !alreadyProposed(existing, "dashboard", best.domain)
+  ) {
+    const db = getDashboardBlueprint(best.domain);
+    created.push({
+      id: `rec-db-${best.domain}-${Date.now()}`,
+      kind: "dashboard",
+      domain: best.domain,
+      title: db.name,
+      explanation: `پایش پیوسته «${concept.label}» برای تصمیم‌های تکراری.`,
+      businessImpact: db.executiveValue,
+      expectedValue: db.strategicImpact,
+      primaryCta: "ایجاد",
+      secondaryCta: "بعداً",
+      status: "proposed",
+      createdAt: Date.now(),
+      concernCount: best.count,
+      dashboard: db,
+    });
   }
 
   return created;

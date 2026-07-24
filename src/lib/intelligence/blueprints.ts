@@ -3,6 +3,7 @@ import type {
   DashboardBlueprint,
   WorkflowBlueprint,
 } from "@/types/intelligence";
+import { mergeDashboardBlueprint } from "./executive-packs";
 
 function steps(
   items: {
@@ -546,5 +547,8 @@ export function getWorkflowBlueprint(domain: ConcernDomain): WorkflowBlueprint {
 }
 
 export function getDashboardBlueprint(domain: ConcernDomain): DashboardBlueprint {
-  return JSON.parse(JSON.stringify(dashboardCatalog[domain])) as DashboardBlueprint;
+  const base = JSON.parse(
+    JSON.stringify(dashboardCatalog[domain])
+  ) as DashboardBlueprint;
+  return mergeDashboardBlueprint(base, domain);
 }

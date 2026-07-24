@@ -17,9 +17,15 @@ export function CommandCenterPage() {
     <AppShell pageTitle={pageLabels.home}>
       <CommandCenterProvider>
         <div className="px-5 py-7 md:px-10 md:py-10 pb-28 max-w-[1200px] mx-auto">
-          <Reveal delay={0.06}>
+          <Reveal delay={0.04}>
             <ExecutiveBrief />
           </Reveal>
+
+          <div className="mt-10">
+            <Reveal delay={0.08}>
+              <ExecutiveInsights />
+            </Reveal>
+          </div>
 
           <div className="mt-8">
             <Reveal delay={0.12}>
@@ -28,19 +34,19 @@ export function CommandCenterPage() {
           </div>
 
           <div className="mt-10">
-            <Reveal delay={0.16}>
+            <Reveal delay={0.14}>
               <TodayDecisions />
             </Reveal>
           </div>
 
           <div className="mt-12">
-            <Reveal delay={0.18}>
+            <Reveal delay={0.16}>
               <OverviewCapabilities />
             </Reveal>
           </div>
 
           <div className="mt-12">
-            <Reveal delay={0.2}>
+            <Reveal delay={0.18}>
               <QuickQuestions />
             </Reveal>
           </div>
@@ -51,12 +57,6 @@ export function CommandCenterPage() {
             </Reveal>
             <Reveal delay={0.14}>
               <ProjectPortfolio compact />
-            </Reveal>
-          </div>
-
-          <div className="mt-16">
-            <Reveal delay={0.1}>
-              <ExecutiveInsights />
             </Reveal>
           </div>
         </div>

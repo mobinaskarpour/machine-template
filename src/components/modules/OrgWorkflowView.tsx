@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -17,8 +17,13 @@ import {
   resolveWorkflowBlueprint,
 } from "@/config/capabilities";
 import { pageLabels, uiLabels } from "@/config/labels";
+import {
+  getWorkflowRuntime,
+  runStatusLabel,
+} from "@/mock/workflow-runtime";
 import { spring } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { toPersianDigits } from "@/lib/persian";
 import type { BusinessEdge, BusinessNode } from "@/types/intelligence";
 
 const roleStyle = {
@@ -40,12 +45,19 @@ const roleIcon = {
 const NODE_W = 220;
 const NODE_H = 88;
 
+type WfTab = "editor" | "timeline" | "logs" | "history";
+
 export function OrgWorkflowView({ workflowId }: { workflowId: string }) {
   const router = useRouter();
+  const [tab, setTab] = useState<WfTab>("editor");
   const org = getOrgWorkflow(workflowId);
   const blueprint = resolveWorkflowBlueprint(workflowId);
   const nodes = useMemo(() => blueprint?.processSteps ?? [], [blueprint]);
   const edges = useMemo(() => blueprint?.connections ?? [], [blueprint]);
+  const runtime = useMemo(
+    () => getWorkflowRuntime(workflowId, org?.domain, org?.name),
+    [workflowId, org]
+  );
 
   const canvas = useMemo(() => {
     if (!nodes.length) return { width: 640, height: 420 };
@@ -72,6 +84,13 @@ export function OrgWorkflowView({ workflowId }: { workflowId: string }) {
     );
   }
 
+  const tabs: { id: WfTab; label: string }[] = [
+    { id: "editor", label: "ویرایشگر گره" },
+    { id: "timeline", label: "خط زمان اجرا" },
+    { id: "logs", label: "لاگ‌ها" },
+    { id: "history", label: "تاریخچه" },
+  ];
+
   return (
     <AppShell pageTitle={org.name}>
       <div className="px-5 py-8 md:px-10 max-w-[1200px] mx-auto pb-28">
@@ -88,97 +107,220 @@ export function OrgWorkflowView({ workflowId }: { workflowId: string }) {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={spring.soft}
-          className="mb-8"
+          className="mb-6"
         >
-          <p className="text-[12px] text-text-tertiary">نقشه عملیات کسب‌وکار</p>
+          <p className="text-[12px] text-text-tertiary">
+            {runtime.category} · مالک: {runtime.owner}
+          </p>
           <h1 className="mt-2 text-[30px] font-semibold text-text-primary">
             {org.name}
           </h1>
           <p className="mt-3 max-w-2xl text-[15px] text-text-secondary leading-relaxed">
             {blueprint.objective}
           </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {blueprint.actors.map((a) => (
-              <span
-                key={a}
-                className="rounded-[8px] border border-etch px-3 py-1 text-[12px] text-text-tertiary"
-              >
-                {a}
-              </span>
-            ))}
+          <div className="mt-4 flex flex-wrap gap-3 text-[12px] text-text-tertiary">
+            <span className="text-warning">
+              {runStatusLabel[runtime.runStatus]}
+            </span>
+            <span>آخرین اجرا: {runtime.lastRunLabel}</span>
+            <span>
+              {toPersianDigits(runtime.stepsCount)} گام · موفقیت{" "}
+              {toPersianDigits(runtime.successRate)}٪
+            </span>
           </div>
         </motion.header>
 
-        <div className="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-8">
-          <div className="relative overflow-auto rounded-[18px] border border-etch bg-panel/60 p-4 md:p-6">
-            <p className="mb-6 text-[12px] text-text-tertiary">
-              هر گره یک عملیات کسب‌وکار است — نه دستور فنی.
-            </p>
+        <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-3">
+          {runtime.kpis.map((k) => (
             <div
-              className="relative"
-              style={{ width: canvas.width, height: canvas.height }}
+              key={k.label}
+              className="rounded-[12px] border border-etch bg-slab/70 px-4 py-3"
             >
-              <svg
-                className="absolute inset-0 pointer-events-none"
-                width={canvas.width}
-                height={canvas.height}
-                aria-hidden
-              >
-                <defs>
-                  <marker
-                    id="org-edge-arrow"
-                    markerWidth="8"
-                    markerHeight="8"
-                    refX="6"
-                    refY="3"
-                    orient="auto"
-                  >
-                    <path d="M0,0 L6,3 L0,6 Z" fill="var(--etch-strong)" />
-                  </marker>
-                </defs>
-                {edges.map((edge) => (
-                  <EdgePath key={edge.id} edge={edge} nodes={nodes} />
-                ))}
-              </svg>
-              {nodes.map((node, i) => {
-                const Icon = roleIcon[node.role];
-                return (
-                  <motion.div
-                    key={node.id}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ ...spring.soft, delay: i * 0.05 }}
-                    className={cn(
-                      "absolute rounded-[14px] border px-4 py-3",
-                      roleStyle[node.role]
-                    )}
-                    style={{
-                      left: node.x,
-                      top: node.y,
-                      width: NODE_W,
-                      minHeight: NODE_H,
-                    }}
-                  >
-                    <div className="flex items-start gap-2">
-                      <Icon size={14} className="mt-0.5 shrink-0 opacity-80" />
-                      <div>
-                        <p className="text-[14px] font-semibold leading-snug">
-                          {node.label}
-                        </p>
-                        {node.owner && (
-                          <p className="mt-1 text-[11px] opacity-75">
-                            مسئول: {node.owner}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
+              <p className="text-[11px] text-text-tertiary">{k.label}</p>
+              <p className="mt-1 text-[18px] font-semibold tabular-nums text-text-primary">
+                {k.value}
+              </p>
             </div>
+          ))}
+          <div className="rounded-[12px] border border-etch bg-slab/70 px-4 py-3">
+            <p className="text-[11px] text-text-tertiary">اجرای امروز</p>
+            <p className="mt-1 text-[18px] font-semibold tabular-nums text-text-primary">
+              {toPersianDigits(runtime.runsToday)}
+            </p>
+          </div>
+        </div>
+
+        <div className="mb-4 flex gap-1.5 overflow-x-auto">
+          {tabs.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id)}
+              className={cn(
+                "shrink-0 rounded-[8px] border px-3 py-1.5 text-[12px] cursor-pointer",
+                tab === t.id
+                  ? "border-primary/40 text-primary bg-primary-soft"
+                  : "border-etch text-text-tertiary"
+              )}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-8">
+          <div className="relative overflow-auto rounded-[18px] border border-etch bg-panel/60 p-4 md:p-6 min-h-[360px]">
+            {tab === "editor" && (
+              <>
+                <p className="mb-6 text-[12px] text-text-tertiary">
+                  هر گره یک عملیات کسب‌وکار است — نه دستور فنی.
+                </p>
+                <div
+                  className="relative"
+                  style={{ width: canvas.width, height: canvas.height }}
+                >
+                  <svg
+                    className="absolute inset-0 pointer-events-none"
+                    width={canvas.width}
+                    height={canvas.height}
+                    aria-hidden
+                  >
+                    <defs>
+                      <marker
+                        id="org-edge-arrow"
+                        markerWidth="8"
+                        markerHeight="8"
+                        refX="6"
+                        refY="3"
+                        orient="auto"
+                      >
+                        <path d="M0,0 L6,3 L0,6 Z" fill="var(--etch-strong)" />
+                      </marker>
+                    </defs>
+                    {edges.map((edge) => (
+                      <EdgePath key={edge.id} edge={edge} nodes={nodes} />
+                    ))}
+                  </svg>
+                  {nodes.map((node, i) => {
+                    const Icon = roleIcon[node.role];
+                    return (
+                      <motion.div
+                        key={node.id}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ ...spring.soft, delay: i * 0.05 }}
+                        className={cn(
+                          "absolute rounded-[14px] border px-4 py-3",
+                          roleStyle[node.role]
+                        )}
+                        style={{
+                          left: node.x,
+                          top: node.y,
+                          width: NODE_W,
+                          minHeight: NODE_H,
+                        }}
+                      >
+                        <div className="flex items-start gap-2">
+                          <Icon
+                            size={14}
+                            className="mt-0.5 shrink-0 opacity-80"
+                          />
+                          <div>
+                            <p className="text-[14px] font-semibold leading-snug">
+                              {node.label}
+                            </p>
+                            {node.owner && (
+                              <p className="mt-1 text-[11px] opacity-75">
+                                مسئول: {node.owner}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+            {tab === "timeline" && (
+              <ol className="space-y-4 pr-3 border-r border-etch mr-2">
+                {runtime.timeline.map((ev) => (
+                  <li key={ev.at + ev.event} className="relative pr-4">
+                    <span
+                      className={cn(
+                        "absolute -right-[7px] top-1.5 h-2.5 w-2.5 rounded-full",
+                        ev.tone === "ok" && "bg-success",
+                        ev.tone === "warn" && "bg-warning",
+                        ev.tone === "info" && "bg-accent"
+                      )}
+                    />
+                    <p className="text-[11px] text-text-tertiary">{ev.at}</p>
+                    <p className="text-[14px] text-text-secondary mt-0.5">
+                      {ev.event}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            )}
+
+            {tab === "logs" && (
+              <ul className="space-y-2 font-mono text-[12px]">
+                {runtime.logs.map((log, i) => (
+                  <li
+                    key={i}
+                    className="rounded-[8px] border border-etch bg-void/30 px-3 py-2 flex gap-3"
+                  >
+                    <span className="text-text-tertiary shrink-0">{log.at}</span>
+                    <span
+                      className={cn(
+                        "shrink-0",
+                        log.level === "error" && "text-danger",
+                        log.level === "warn" && "text-warning",
+                        log.level === "info" && "text-accent"
+                      )}
+                    >
+                      [{log.level}]
+                    </span>
+                    <span className="text-text-secondary">{log.message}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {tab === "history" && (
+              <div className="space-y-3">
+                {[1, 2, 3].map((n) => (
+                  <div
+                    key={n}
+                    className="rounded-[10px] border border-etch px-4 py-3 flex justify-between gap-3"
+                  >
+                    <div>
+                      <p className="text-[13px] text-text-primary">
+                        اجرای #{toPersianDigits(n)}
+                      </p>
+                      <p className="text-[11px] text-text-tertiary mt-0.5">
+                        مدت {runtime.avgDuration} · {runtime.owner}
+                      </p>
+                    </div>
+                    <span className="text-[12px] text-success">موفق</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <aside className="space-y-4">
+            <div className="rounded-[14px] border border-etch bg-slab/70 p-5">
+              <p className="text-[12px] text-text-tertiary">گام‌های فرآیند</p>
+              <ol className="mt-3 space-y-2">
+                {blueprint.processSteps.map((s, i) => (
+                  <li key={s.id} className="text-[12px] text-text-secondary">
+                    {toPersianDigits(i + 1)}. {s.label}
+                  </li>
+                ))}
+              </ol>
+            </div>
             <div className="rounded-[14px] border border-etch bg-slab/70 p-5">
               <p className="text-[12px] text-text-tertiary">ارزش کسب‌وکار</p>
               <p className="mt-2 text-[14px] text-text-primary leading-relaxed">

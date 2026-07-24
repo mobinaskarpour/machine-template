@@ -1,14 +1,33 @@
 import type { ExecutiveReport } from "@/types/ai";
 import { baseReport } from "@/mock/ai-workspace";
+import {
+  capDiscoveries,
+  pickVisualsForQuery,
+} from "@/lib/visual-experiences";
 
 function match(input: string, patterns: string[]): boolean {
   const n = input.trim().toLowerCase();
   return patterns.some((p) => n.includes(p.toLowerCase()));
 }
 
+function finalize(report: ExecutiveReport, query: string): ExecutiveReport {
+  const visuals =
+    report.visuals?.length && report.visuals.length > 0
+      ? report.visuals.slice(0, 3)
+      : pickVisualsForQuery(query);
+  return {
+    ...report,
+    visuals,
+    discoveries: capDiscoveries(report.discoveries),
+  };
+}
+
 export function processExecutiveQuery(input: string): ExecutiveReport {
   const q = input.trim();
+  return finalize(buildReport(q), q);
+}
 
+function buildReport(q: string): ExecutiveReport {
   if (
     match(q, [
       "بیشترین ریسک",
@@ -139,7 +158,7 @@ export function processExecutiveQuery(input: string): ExecutiveReport {
           reason: "سه بار در دو روز درباره ریسک و تأخیر آریا پرسیده‌اید.",
           businessValue: "پایش یک‌نگاه زمان، نقد و پیمانکار بدون پرس‌وجوی تکراری.",
           expectedImpact: "کاهش ۳۰٪ زمان تصمیم صبحگاهی برای این پروژه.",
-          cta: "تأیید و پین داشبورد",
+          cta: "ایجاد",
         },
         {
           id: "d-wf-1",
@@ -148,7 +167,7 @@ export function processExecutiveQuery(input: string): ExecutiveReport {
           reason: "این مسیر قبلاً جواب داده: جلسه پیمانکار، سپس پیگیری روزانه تا بازیابی شناوری.",
           businessValue: "فعال‌سازی خودکار هشدار و چک‌لیست بازیابی بدون ساخت فنی.",
           expectedImpact: "کاهش ۲ روز تأخیر در چرخه واکنش اجرایی.",
-          cta: "تأیید گردش‌کار پیشنهادی",
+          cta: "ایجاد",
         },
       ],
     });
@@ -241,7 +260,7 @@ export function processExecutiveQuery(input: string): ExecutiveReport {
           reason: "سؤالات تکراری درباره نقد و وصول در این هفته.",
           businessValue: "دید یکپارچه جریان، حوضچه‌های گیرکرده و اولویت وصول.",
           expectedImpact: "شفافیت تصمیم پرداخت در کمتر از ۲ دقیقه.",
-          cta: "تأیید و پین داشبورد",
+          cta: "ایجاد",
         },
         {
           id: "d-wf-2",
@@ -250,7 +269,7 @@ export function processExecutiveQuery(input: string): ExecutiveReport {
           reason: "چرخه تکراری یادآوری صورت‌وضعیت‌های بالای ۱۰ روز.",
           businessValue: "پیگیری منظم بدون وابستگی به حافظه فردی.",
           expectedImpact: "کاهش متوسط وصول تا ۴ روز در افق یک ماه.",
-          cta: "تأیید گردش‌کار پیشنهادی",
+          cta: "ایجاد",
         },
       ],
     });
@@ -396,7 +415,7 @@ export function processExecutiveQuery(input: string): ExecutiveReport {
           reason: "ضعف عملکرد تکرار شده؛ ارزیابی ماهانه جلوی غافلگیری را می‌گیرد.",
           businessValue: "رتبه‌بندی منظم بدون پیگیری دستی PMO.",
           expectedImpact: "شناسایی زودتر پیمانکار پرریسک تا ۱۰ روز.",
-          cta: "تأیید گردش‌کار پیشنهادی",
+          cta: "ایجاد",
         },
       ],
     });

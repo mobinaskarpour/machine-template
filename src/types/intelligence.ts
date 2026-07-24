@@ -73,6 +73,31 @@ export interface WorkflowBlueprint {
   connections: BusinessEdge[];
 }
 
+export type WidgetKind =
+  | "metric"
+  | "kpi-row"
+  | "line"
+  | "bar"
+  | "area"
+  | "donut"
+  | "gauge"
+  | "heatmap"
+  | "waterfall"
+  | "treemap"
+  | "timeline"
+  | "list"
+  | "river"
+  | "rings"
+  | "matrix";
+
+export interface DashboardWidget {
+  id: string;
+  title: string;
+  kind: WidgetKind;
+  why: string;
+  span: 1 | 2;
+}
+
 export interface DashboardBlueprint {
   id: string;
   name: string;
@@ -84,6 +109,14 @@ export interface DashboardBlueprint {
   updateFrequency: string;
   departments: string[];
   widgets: DashboardWidget[];
+  /** Executive Analytics Workspace — filled by packs when missing */
+  aiBrief?: string;
+  rootCause?: string[];
+  financialImpact?: string;
+  operationalImpact?: string;
+  relatedRisks?: string[];
+  recommendedAction?: string;
+  historicalTrend?: string;
 }
 
 export interface BusinessNode {
@@ -101,14 +134,6 @@ export interface BusinessEdge {
   from: string;
   to: string;
   label?: string;
-}
-
-export interface DashboardWidget {
-  id: string;
-  title: string;
-  kind: "metric" | "river" | "rings" | "matrix" | "timeline" | "list";
-  why: string;
-  span: 1 | 2;
 }
 
 export interface IntelligenceRecommendation {

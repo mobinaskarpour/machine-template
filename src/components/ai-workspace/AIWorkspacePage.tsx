@@ -51,22 +51,24 @@ function AIWorkspaceInner() {
 
   const recommendations = useIntelligenceStore((s) => s.recommendations);
   const activeReviewId = useIntelligenceStore((s) => s.activeReviewId);
-  const openReview = useIntelligenceStore((s) => s.openReview);
   const closeReview = useIntelligenceStore((s) => s.closeReview);
   const dismiss = useIntelligenceStore((s) => s.dismiss);
   const defer = useIntelligenceStore((s) => s.defer);
   const approve = useIntelligenceStore((s) => s.approve);
   const getById = useIntelligenceStore((s) => s.getById);
 
-  // Active proposals first; deferred resurface softly (non-intrusive continuous learning)
-  const visibleRecs = selectProposedRecommendations(recommendations)
-    .filter((r) => r.status === "proposed" || r.status === "reviewing" || r.status === "deferred")
-    .sort((a, b) => {
+  // Max two suggestions: best Workflow + best Dashboard only
+  const proposed = selectProposedRecommendations(recommendations).sort(
+    (a, b) => {
       const rank = (s: string) =>
         s === "reviewing" ? 0 : s === "proposed" ? 1 : 2;
       return rank(a.status) - rank(b.status) || b.createdAt - a.createdAt;
-    })
-    .slice(0, 4);
+    }
+  );
+  const visibleRecs = [
+    proposed.find((r) => r.kind === "dashboard"),
+    proposed.find((r) => r.kind === "workflow"),
+  ].filter(Boolean) as typeof proposed;
   const reviewItem = activeReviewId ? getById(activeReviewId) ?? null : null;
 
   const handleApprove = (id: string) => {
@@ -140,8 +142,7 @@ function AIWorkspaceInner() {
 
       <IntelligenceNotifications
         items={visibleRecs}
-        onReview={openReview}
-        onDefer={defer}
+        onCreate={handleApprove}
         onDismiss={dismiss}
       />
 
