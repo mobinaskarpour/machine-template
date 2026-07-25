@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { company } from "@/lib/demo/config";
 
 export interface TenantSession {
   orgName: string;
@@ -23,18 +24,13 @@ interface SessionState {
 }
 
 export const defaultSession: TenantSession = {
-  orgName: "گروه ساختمانی آسمان",
-  userName: "مهندس رضایی",
-  role: "مدیرعامل",
-  initials: "ر",
-  asOfLabel: "به‌روز تا ساعت ۰۷:۴۰ · امروز",
-  sources: [
-    "برنامه زمان‌بندی (پریماورا)",
-    "دفتر مالی و صورت‌وضعیت",
-    "قراردادها و دستور تغییر",
-    "عملیات سایت",
-  ],
-  demoMode: true,
+  orgName: company.session.orgName,
+  userName: company.session.userName,
+  role: company.session.role,
+  initials: company.session.initials,
+  asOfLabel: company.session.asOfLabel,
+  sources: [...company.session.sources],
+  demoMode: company.session.demoMode,
 };
 
 export const useSessionStore = create<SessionState>()(
@@ -48,7 +44,7 @@ export const useSessionStore = create<SessionState>()(
         set((s) => ({ session: { ...s.session, ...patch } })),
     }),
     {
-      name: "machine-session",
+      name: company.session.persistKey,
       partialize: (s) => ({ entered: s.entered, session: s.session }),
     }
   )

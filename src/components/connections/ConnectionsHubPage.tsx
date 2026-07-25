@@ -41,7 +41,7 @@ export function ConnectionsHubPage() {
             اتصالات
           </h1>
           <p className="mt-2.5 max-w-2xl text-[14px] text-text-secondary leading-relaxed">
-            THE MACHINE مغز متفکر سازمان است — این صفحه جریان داده از تمام
+            {pageLabels.brand} مغز متفکر سازمان است — این صفحه جریان داده از تمام
             سیستم‌های متصل را در یک نگاه نشان می‌دهد.
           </p>
         </motion.header>
@@ -397,7 +397,7 @@ function ConnectionGraph() {
           گراف اتصالات
         </h2>
         <p className="mt-1 text-[13px] text-text-tertiary">
-          THE MACHINE در مرکز — سیستم‌های سازمان در مدار داده
+          {pageLabels.brand} در مرکز — سیستم‌های سازمان در مدار داده
         </p>
       </div>
 
@@ -579,7 +579,7 @@ function ConnectionGraph() {
                 fontSize="10"
                 fontWeight="700"
               >
-                THE MACHINE
+                {pageLabels.brand}
               </text>
             </motion.g>
 

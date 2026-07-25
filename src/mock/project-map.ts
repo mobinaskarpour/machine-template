@@ -1,3 +1,4 @@
+/** Codex-editable JSON mirror: see mock-data/ and industries/construction/mock-data/. */
 /** 2.5D Digital Twin site map — برج آریا */
 
 export type MapZoneStatus =

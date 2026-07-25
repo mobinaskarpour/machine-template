@@ -4,12 +4,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useSessionStore } from "@/store/session-store";
 import { spring } from "@/lib/motion";
 import { useReducedMotion } from "@/components/motion";
+import { pageLabels } from "@/config/labels";
+import { company } from "@/lib/demo/config";
 
 export function SessionGate({ children }: { children: React.ReactNode }) {
   const entered = useSessionStore((s) => s.entered);
   const session = useSessionStore((s) => s.session);
   const enter = useSessionStore((s) => s.enter);
   const reduced = useReducedMotion();
+  const gateTitle = company.gate.title;
+  const demoDisclaimer = company.gate.demoDisclaimer;
+  const footerNote = company.gate.footerNote;
 
   return (
     <>
@@ -33,13 +38,13 @@ export function SessionGate({ children }: { children: React.ReactNode }) {
               aria-labelledby="gate-title"
             >
               <p className="text-[12px] tracking-[0.16em] text-text-tertiary">
-                THE MACHINE
+                {pageLabels.brand}
               </p>
               <h1
                 id="gate-title"
                 className="mt-3 text-[28px] font-semibold text-text-primary leading-snug"
               >
-                ورود به دید مدیریتی
+                {gateTitle}
               </h1>
               <p className="mt-3 text-[14px] text-text-secondary leading-relaxed">
                 {session.orgName} · {session.role}
@@ -54,7 +59,7 @@ export function SessionGate({ children }: { children: React.ReactNode }) {
                 </p>
                 {session.demoMode && (
                   <p className="text-[12px] text-primary pt-1">
-                    محیط نمایش سازمانی — اعداد ثابت برای بررسی تصمیم‌گیری
+                    {demoDisclaimer}
                   </p>
                 )}
               </div>
@@ -67,7 +72,7 @@ export function SessionGate({ children }: { children: React.ReactNode }) {
                 ادامه به‌عنوان {session.userName}
               </button>
               <p className="mt-4 text-center text-[12px] text-text-tertiary leading-relaxed">
-                بدون ورود واقعی به سامانه‌های مالی — فقط برای ارزیابی محصول
+                {footerNote}
               </p>
             </motion.div>
           </motion.div>

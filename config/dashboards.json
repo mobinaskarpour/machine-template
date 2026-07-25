@@ -1,0 +1,101 @@
+{
+  "statusLabels": {
+    "active": "فعال",
+    "attention": "نیاز به توجه",
+    "proposed": "پیشنهادی"
+  },
+  "items": [
+    {
+      "id": "db-risk",
+      "domain": "risk-portfolio",
+      "name": "داشبورد ریسک پورتفویو",
+      "summary": "کدام پروژه امروز پورتفویو را تهدید می‌کند؟",
+      "question": "بیشترین ریسک کجاست؟",
+      "status": "attention",
+      "relatedWorkflowId": "wf-risk"
+    },
+    {
+      "id": "db-cash",
+      "domain": "cashflow",
+      "name": "داشبورد جریان نقد اجرایی",
+      "summary": "نقد تا چند هفته دوام دارد و کجا گیر کرده؟",
+      "question": "موقعیت نقد هفته",
+      "status": "attention",
+      "relatedWorkflowId": "wf-cash"
+    },
+    {
+      "id": "db-ar",
+      "domain": "collection",
+      "name": "داشبورد وصول مطالبات",
+      "summary": "کدام صورت‌وضعیت اولویت آزادی سرمایه است؟",
+      "question": "اولویت وصول",
+      "status": "active",
+      "relatedWorkflowId": "wf-ar"
+    },
+    {
+      "id": "db-delay",
+      "domain": "delay",
+      "name": "داشبورد اطمینان برنامه",
+      "summary": "شناوری مسیر بحرانی و نقاط عطف در خطر",
+      "question": "اطمینان برنامه",
+      "status": "attention",
+      "relatedWorkflowId": "wf-delay"
+    },
+    {
+      "id": "db-margin",
+      "domain": "margin",
+      "name": "داشبورد حاشیه اجرایی",
+      "summary": "کدام پروژه حاشیه فصل را می‌خورد؟",
+      "question": "حاشیه پورتفویو",
+      "status": "active",
+      "relatedWorkflowId": "wf-margin"
+    },
+    {
+      "id": "db-equip",
+      "domain": "equipment",
+      "name": "داشبورد سلامت تجهیزات",
+      "summary": "خواب ناوگان و هزینه اجاره غیرضروری",
+      "question": "بهره‌برداری ناوگان",
+      "status": "active",
+      "relatedWorkflowId": "wf-equip"
+    },
+    {
+      "id": "db-sub",
+      "domain": "contractor",
+      "name": "داشبورد عملکرد پیمانکاران",
+      "summary": "پیمانکار پرریسک و اهرم پرداخت مشروط",
+      "question": "رتبه پیمانکاران",
+      "status": "active",
+      "relatedWorkflowId": "wf-sub"
+    },
+    {
+      "id": "db-proc",
+      "domain": "procurement",
+      "name": "داشبورد تدارکات بحرانی",
+      "summary": "اقلام مسیر بحرانی قبل از توقف جبهه",
+      "question": "اقلام در خطر",
+      "status": "proposed",
+      "relatedWorkflowId": "wf-proc"
+    }
+  ],
+  "overviewEntryMap": {
+    "risk": "db-risk",
+    "cash": "db-cash",
+    "schedule": "db-delay",
+    "portfolio": "db-risk",
+    "ops": "db-equip",
+    "collection": "db-ar",
+    "margin": "db-margin",
+    "contractor": "db-sub",
+    "procurement": "db-proc",
+    "ins1": "db-cash",
+    "ins2": "db-delay",
+    "ins3": "db-sub",
+    "ins4": "db-ar",
+    "ins5": "db-proc",
+    "ins6": "db-equip",
+    "viz-cash": "db-cash",
+    "viz-health": "db-risk",
+    "viz-risk": "db-risk"
+  }
+}

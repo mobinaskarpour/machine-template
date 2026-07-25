@@ -1,3 +1,4 @@
+/** Codex-editable JSON mirror: see mock-data/ and industries/construction/mock-data/. */
 /** Evidence Hub — mock media & documents for برج آریا */
 
 export type ZoneStatus = "done" | "active" | "delayed" | "pending";

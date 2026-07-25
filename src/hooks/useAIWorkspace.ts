@@ -50,7 +50,10 @@ export function useAIWorkspace(initialQuery?: string | null) {
   );
 
   const activeConversation = conversations.find((c) => c.id === activeId);
-  const messages = activeConversation?.messages ?? [];
+  const messages = useMemo(
+    () => activeConversation?.messages ?? [],
+    [activeConversation?.messages]
+  );
 
   const lastReport = useMemo(() => {
     const last = [...messages].reverse().find((m) => m.role === "assistant");

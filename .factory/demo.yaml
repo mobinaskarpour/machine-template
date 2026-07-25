@@ -1,0 +1,21 @@
+id: machine-template
+display_name: "THE MACHINE — Demo Template"
+locale: fa
+dir: rtl
+brand: "THE MACHINE"
+extension_points:
+  - demo.config.json
+  - branding/
+  - config/
+  - industries/
+  - mock-data/
+  - src/config/
+  - src/mock/
+  - src/lib/ai-engine.ts
+  - src/lib/intelligence/
+scripts:
+  lint: npm run lint
+  typecheck: npm run typecheck
+  test: npm run test
+  build: npm run build
+  validate: npm run validate-demo

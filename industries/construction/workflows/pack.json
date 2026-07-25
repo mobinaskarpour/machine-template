@@ -1,0 +1,106 @@
+{
+  "items": [
+    {
+      "id": "wf-delay",
+      "domain": "delay",
+      "name": "بازیابی برنامه پروژه",
+      "summary": "واکنش استاندارد به شکستن مسیر بحرانی",
+      "status": "attention",
+      "relatedDashboardId": "db-delay",
+      "actors": [
+        "مدیر پروژه",
+        "برنامه‌ریز",
+        "تدارکات"
+      ]
+    },
+    {
+      "id": "wf-ar",
+      "domain": "collection",
+      "name": "وصول مطالبات",
+      "summary": "آزادی سرمایه قفل‌شده در صورت‌وضعیت‌های معوق",
+      "status": "active",
+      "relatedDashboardId": "db-ar",
+      "actors": [
+        "مالی",
+        "مدیر پروژه"
+      ]
+    },
+    {
+      "id": "wf-cash",
+      "domain": "cashflow",
+      "name": "کنترل جریان نقد اجرایی",
+      "summary": "اولویت پرداخت و وصول بر اساس اثر عملیاتی",
+      "status": "active",
+      "relatedDashboardId": "db-cash",
+      "actors": [
+        "مدیر مالی",
+        "مدیرعامل"
+      ]
+    },
+    {
+      "id": "wf-risk",
+      "domain": "risk-portfolio",
+      "name": "تشدید ریسک پورتفویو",
+      "summary": "ارتقای ریسک قرمز به صف تصمیم مدیرعامل",
+      "status": "attention",
+      "relatedDashboardId": "db-risk",
+      "actors": [
+        "دفتر مدیریت پروژه",
+        "مدیرعامل"
+      ]
+    },
+    {
+      "id": "wf-sub",
+      "domain": "contractor",
+      "name": "ارزیابی پیمانکار فرعی",
+      "summary": "رتبه‌بندی ماهانه و پرداخت مشروط",
+      "status": "active",
+      "relatedDashboardId": "db-sub",
+      "actors": [
+        "عملیات",
+        "مالی"
+      ]
+    },
+    {
+      "id": "wf-equip",
+      "domain": "equipment",
+      "name": "نگهداری و بهره‌برداری تجهیزات",
+      "summary": "کاهش خواب و اجاره اضطراری",
+      "status": "active",
+      "relatedDashboardId": "db-equip",
+      "actors": [
+        "عملیات",
+        "نگهداری"
+      ]
+    },
+    {
+      "id": "wf-proc",
+      "domain": "procurement",
+      "name": "کنترل تدارکات بحرانی",
+      "summary": "حذف توقف ناشی از اقلام بلندمدت",
+      "status": "proposed",
+      "relatedDashboardId": "db-proc",
+      "actors": [
+        "تدارکات",
+        "برنامه‌ریز"
+      ]
+    },
+    {
+      "id": "wf-margin",
+      "domain": "margin",
+      "name": "حفاظت از حاشیه سود",
+      "summary": "بستن نشتی حاشیه قبل از تثبیت زیان فصل",
+      "status": "active",
+      "relatedDashboardId": "db-margin",
+      "actors": [
+        "مدیرعامل",
+        "مالی"
+      ]
+    }
+  ],
+  "statusLabels": {
+    "active": "فعال",
+    "attention": "نیاز به توجه",
+    "proposed": "پیشنهادی"
+  }
+}

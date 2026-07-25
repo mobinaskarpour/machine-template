@@ -5,22 +5,11 @@ import type {
   HistoryCategory,
 } from "@/types/ai";
 
-export const historyCategories: { id: HistoryCategory; label: string }[] = [
-  { id: "portfolio", label: "پورتفویو" },
-  { id: "capital", label: "پول و قرارداد" },
-  { id: "operations", label: "اجرا" },
-  { id: "risk", label: "ریسک" },
-  { id: "sessions", label: "جلسات" },
-];
+import data from "@demo/mock-data/ai/workspace.json";
 
-export const roleLabels: Record<ExecutiveRole, string> = {
-  ceo: "مدیرعامل",
-  cfo: "مدیر مالی",
-  project: "مدیر پروژه",
-  operations: "مدیر عملیات",
-};
+export const historyCategories = data.historyCategories as { id: HistoryCategory; label: string }[];
+export const roleLabels = data.roleLabels as Record<ExecutiveRole, string>;
 
-/** Contextual quick questions — morning vs afternoon, by role */
 export function getContextualQuestions(
   role: ExecutiveRole,
   hour: number
@@ -105,62 +94,13 @@ export function getContextualQuestions(
   return isMorning ? byRole[role].morning : byRole[role].afternoon;
 }
 
-export const welcomeFollowUps = [
-  "کدام پروژه بیشترین ریسک را دارد؟",
-  "وضعیت نقدینگی این هفته چگونه است؟",
-  "امروز سه تصمیمی که باید بگیرم چیست؟",
-];
-
-export const initialConversations: Conversation[] = [
-  {
-    id: "conv-1",
-    title: "ریسک برج آریا",
-    category: "risk",
-    preview: "مسیر بحرانی و اثر نقدینگی",
-    updatedAt: "دیروز",
-    messages: [
-      {
-        id: "m1",
-        role: "user",
-        content: "چرا برج آریا قرمز شده؟",
-      },
-      {
-        id: "m2",
-        role: "assistant",
-        content:
-          "برج آریا به‌خاطر شکستن مسیر بحرانی و قفل شدن صورت‌وضعیت فاز ۲ وارد وضعیت قرمز شده است.",
-      },
-    ],
-  },
-  {
-    id: "conv-2",
-    title: "نقدینگی هفته",
-    category: "capital",
-    preview: "۱۸.۴ میلیارد در معرض ریسک",
-    updatedAt: "۲ روز پیش",
-    messages: [
-      {
-        id: "m3",
-        role: "user",
-        content: "وضعیت نقدینگی این هفته چگونه است؟",
-      },
-    ],
-  },
-  {
-    id: "conv-3",
-    title: "عملکرد پیمانکاران",
-    category: "operations",
-    preview: "پیمانکار سازه زیر آستانه",
-    updatedAt: "هفته گذشته",
-    messages: [],
-  },
-];
+export const welcomeFollowUps = data.welcomeFollowUps as string[];
+export const initialConversations = data.initialConversations as Conversation[];
 
 export function getCategoryLabel(category: HistoryCategory): string {
   return historyCategories.find((c) => c.id === category)?.label ?? category;
 }
 
-/** Shared block builders used by engine */
 export function baseReport(
   partial: Omit<ExecutiveReport, "thinkingSteps"> & {
     thinkingSteps?: string[];
@@ -176,3 +116,4 @@ export function baseReport(
     ...partial,
   };
 }
+

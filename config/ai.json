@@ -1,0 +1,17 @@
+{
+  "persona": {
+    "name": "دستیار اجرایی",
+    "role": "مشاور تصمیم مدیرعامل",
+    "tone": "executive-persian",
+    "industry": "construction"
+  },
+  "welcome": {
+    "title": "فضای کار هوش مصنوعی",
+    "subtitle": "پرسش اجرایی بپرسید — گزارش، ریسک، نقد و برنامه"
+  },
+  "notes": {
+    "engine": "src/lib/ai-engine.ts",
+    "scenariosPack": "industries/construction/ai/scenarios.json",
+    "hint": "Codex should extend scenarios.json and mock-data/ai/*; keep matcher logic in TypeScript."
+  }
+}

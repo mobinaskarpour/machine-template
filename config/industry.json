@@ -1,0 +1,25 @@
+{
+  "id": "construction",
+  "name": "ساخت‌وساز",
+  "nameEn": "Construction",
+  "description": "Executive OS pack for construction portfolios",
+  "domains": [
+    "risk-portfolio",
+    "cashflow",
+    "collection",
+    "delay",
+    "margin",
+    "equipment",
+    "contractor",
+    "procurement"
+  ],
+  "packs": {
+    "ai": "industries/construction/ai",
+    "workflows": "industries/construction/workflows",
+    "dashboards": "industries/construction/dashboards",
+    "quickActions": "industries/construction/quick-actions",
+    "mockData": "industries/construction/mock-data",
+    "images": "industries/construction/images",
+    "icons": "industries/construction/icons"
+  }
+}

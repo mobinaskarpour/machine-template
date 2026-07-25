@@ -1,0 +1,40 @@
+{
+  "productName": "THE MACHINE",
+  "legalName": "گروه ساختمانی آسمان",
+  "shortName": "آسمان",
+  "industry": "construction",
+  "locale": {
+    "lang": "fa",
+    "dir": "rtl",
+    "font": "vazirmatn"
+  },
+  "metadata": {
+    "title": "THE MACHINE — دید مدیریتی",
+    "description": "سیستم‌عامل اجرایی هوش مصنوعی برای ساخت‌وساز"
+  },
+  "session": {
+    "orgName": "گروه ساختمانی آسمان",
+    "userName": "مهندس رضایی",
+    "role": "مدیرعامل",
+    "initials": "ر",
+    "asOfLabel": "به‌روز تا ساعت ۰۷:۴۰ · امروز",
+    "sources": [
+      "برنامه زمان‌بندی (پریماورا)",
+      "دفتر مالی و صورت‌وضعیت",
+      "قراردادها و دستور تغییر",
+      "عملیات سایت"
+    ],
+    "demoMode": true,
+    "persistKey": "machine-session"
+  },
+  "gate": {
+    "eyebrow": "THE MACHINE",
+    "title": "ورود به دید مدیریتی",
+    "demoDisclaimer": "محیط نمایش سازمانی — اعداد ثابت برای بررسی تصمیم‌گیری",
+    "footerNote": "بدون ورود واقعی به سامانه‌های مالی — فقط برای ارزیابی محصول"
+  },
+  "branding": {
+    "logo": "branding/logo.svg",
+    "favicon": "branding/favicon.svg"
+  }
+}

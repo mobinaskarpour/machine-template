@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
-/* THE MACHINE — Construction Edition
-   Dark-first · steel / concrete · warm decision · cool intelligence */
+/* Theme color tokens are injected at runtime from config/theme.json.
+   Structural utilities (surfaces, motion, type scale) remain here. */
 
 :root {
   /* Surfaces */

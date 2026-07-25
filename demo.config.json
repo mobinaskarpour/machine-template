@@ -1,0 +1,30 @@
+{
+  "id": "machine-template",
+  "productName": "THE MACHINE",
+  "companyName": "گروه ساختمانی آسمان",
+  "industry": "construction",
+  "primaryColor": "#c4a574",
+  "accentColor": "#6b9aab",
+  "logo": "branding/logo.svg",
+  "favicon": "branding/favicon.svg",
+  "language": "fa",
+  "direction": "rtl",
+  "theme": "dark",
+  "font": "vazirmatn",
+  "dashboardPack": "industries/construction/dashboards",
+  "workflowPack": "industries/construction/workflows",
+  "scenarioPack": "industries/construction/ai",
+  "mockDataPack": "industries/construction/mock-data",
+  "quickActionsPack": "industries/construction/quick-actions",
+  "paths": {
+    "company": "config/company.json",
+    "theme": "config/theme.json",
+    "industry": "config/industry.json",
+    "ai": "config/ai.json",
+    "workflows": "config/workflows.json",
+    "dashboards": "config/dashboards.json",
+    "navigation": "config/navigation.json",
+    "branding": "branding/",
+    "mockData": "mock-data/"
+  }
+}

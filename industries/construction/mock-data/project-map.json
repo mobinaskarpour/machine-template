@@ -1,0 +1,651 @@
+{
+  "mapZones": [
+    {
+      "id": "block-a",
+      "name": "بلوک A",
+      "kind": "block",
+      "x": 8,
+      "y": 18,
+      "w": 22,
+      "h": 36,
+      "levels": 5,
+      "owner": "سرپرست سازه",
+      "imageIds": [
+        "img1",
+        "img2",
+        "img3"
+      ],
+      "videoIds": [
+        "vid1",
+        "vid2"
+      ],
+      "docIds": [
+        "doc1",
+        "doc4",
+        "doc5"
+      ],
+      "issues": [
+        "کمبود فولاد مسیر بحرانی",
+        "ایمنی لبه ناقص در تراز ۱۰",
+        "دو اتصال نیازمند بازبینی کیفیت"
+      ],
+      "relatedWorkflows": [
+        {
+          "id": "wf-delay",
+          "name": "گردش‌کار بازیابی تأخیر"
+        },
+        {
+          "id": "wf-proc",
+          "name": "تسریع تدارکات بحرانی"
+        }
+      ],
+      "lastReport": "گزارش کارگاهی ۱۱ مرداد — جبهه سازه نیمه‌فعال",
+      "aiNote": "این قسمت عقب افتاده است. اختلاف ۱۳ روز نسبت به برنامه.",
+      "progress": 61,
+      "planned": 74,
+      "status": "delayed",
+      "lastVisit": "دیروز · ۱۴:۲۰",
+      "lastImage": "۱۱ مرداد ۱۴۰۵",
+      "layerScores": {
+        "physical": 61,
+        "progress": 61,
+        "safety": 42,
+        "quality": 68,
+        "equipment": 55,
+        "materials": 38,
+        "risk": 82,
+        "documents": 70
+      }
+    },
+    {
+      "id": "block-b",
+      "name": "بلوک B",
+      "kind": "block",
+      "x": 34,
+      "y": 14,
+      "w": 24,
+      "h": 32,
+      "levels": 6,
+      "owner": "سرپرست بتن",
+      "imageIds": [
+        "img4",
+        "img5",
+        "img10"
+      ],
+      "videoIds": [
+        "vid3"
+      ],
+      "docIds": [
+        "doc2",
+        "doc7"
+      ],
+      "issues": [
+        "توقف ۳۰ دقیقه‌ای پمپ بتن در شیفت صبح"
+      ],
+      "relatedWorkflows": [
+        {
+          "id": "wf-delay",
+          "name": "گردش‌کار بازیابی تأخیر"
+        }
+      ],
+      "lastReport": "بتن‌ریزی سقف طبقه ۱۲ طبق برنامه ادامه دارد.",
+      "aiNote": "این قسمت جلوتر از برنامه است نسبت به بلوک A.",
+      "progress": 74,
+      "planned": 72,
+      "status": "onSchedule",
+      "lastVisit": "امروز · ۰۹:۱۰",
+      "lastImage": "۱۰ مرداد ۱۴۰۵",
+      "layerScores": {
+        "physical": 74,
+        "progress": 74,
+        "safety": 78,
+        "quality": 82,
+        "equipment": 80,
+        "materials": 72,
+        "risk": 35,
+        "documents": 85
+      }
+    },
+    {
+      "id": "block-c",
+      "name": "بلوک C",
+      "kind": "block",
+      "x": 62,
+      "y": 16,
+      "w": 20,
+      "h": 28,
+      "levels": 3,
+      "owner": "سرپرست بلوک C",
+      "imageIds": [
+        "img11"
+      ],
+      "videoIds": [],
+      "docIds": [
+        "doc2"
+      ],
+      "issues": [
+        "هنوز مدرک اجرایی کافی ثبت نشده است"
+      ],
+      "relatedWorkflows": [],
+      "lastReport": "آماده‌سازی فونداسیون · شروع اسکلت هفته آینده",
+      "aiNote": "اینجا هنوز مدرک اجرایی ثبت نشده است.",
+      "progress": 22,
+      "planned": 28,
+      "status": "risk",
+      "lastVisit": "۴ روز پیش",
+      "lastImage": "۲ مرداد ۱۴۰۵",
+      "layerScores": {
+        "physical": 22,
+        "progress": 22,
+        "safety": 70,
+        "quality": 60,
+        "equipment": 40,
+        "materials": 55,
+        "risk": 58,
+        "documents": 25
+      }
+    },
+    {
+      "id": "office",
+      "name": "اداری",
+      "kind": "office",
+      "x": 86,
+      "y": 8,
+      "w": 10,
+      "h": 12,
+      "levels": 2,
+      "owner": "دفتر کارگاه",
+      "imageIds": [],
+      "videoIds": [],
+      "docIds": [
+        "doc8",
+        "doc14"
+      ],
+      "issues": [],
+      "relatedWorkflows": [],
+      "lastReport": "جلسه بازیابی پیمانکار برگزار شد",
+      "aiNote": "مرکز هماهنگی پروژه پایدار است.",
+      "progress": 100,
+      "planned": 100,
+      "status": "complete",
+      "lastVisit": "امروز",
+      "lastImage": "—",
+      "layerScores": {
+        "physical": 100,
+        "progress": 100,
+        "safety": 90,
+        "quality": 90,
+        "equipment": 50,
+        "materials": 50,
+        "risk": 10,
+        "documents": 95
+      }
+    },
+    {
+      "id": "warehouse",
+      "name": "انبار",
+      "kind": "warehouse",
+      "x": 4,
+      "y": 6,
+      "w": 14,
+      "h": 10,
+      "levels": 1,
+      "owner": "انباردار",
+      "imageIds": [
+        "img8"
+      ],
+      "videoIds": [],
+      "docIds": [
+        "doc12"
+      ],
+      "issues": [
+        "موجودی فولاد زیر آستانه مسیر بحرانی"
+      ],
+      "relatedWorkflows": [
+        {
+          "id": "wf-proc",
+          "name": "تسریع تدارکات بحرانی"
+        }
+      ],
+      "lastReport": "موجودی فولاد برای ۴ روز باقی مانده",
+      "aiNote": "کمبود مصالح اینجا روی بلوک A اثر گذاشته.",
+      "progress": 80,
+      "planned": 80,
+      "status": "risk",
+      "lastVisit": "امروز · ۰۸:۰۰",
+      "lastImage": "۶ مرداد ۱۴۰۵",
+      "layerScores": {
+        "physical": 80,
+        "progress": 80,
+        "safety": 72,
+        "quality": 75,
+        "equipment": 60,
+        "materials": 28,
+        "risk": 70,
+        "documents": 60
+      }
+    },
+    {
+      "id": "parking",
+      "name": "پارکینگ",
+      "kind": "parking",
+      "x": 8,
+      "y": 62,
+      "w": 26,
+      "h": 22,
+      "levels": 1,
+      "owner": "پیمانکار محوطه",
+      "imageIds": [
+        "img12"
+      ],
+      "videoIds": [
+        "vid6"
+      ],
+      "docIds": [
+        "doc11"
+      ],
+      "issues": [],
+      "relatedWorkflows": [],
+      "lastReport": "قالب‌بندی سقف پارکینگ طبقه ۱ در جریان",
+      "aiNote": "پیشرفت کند اما کنترل‌شده.",
+      "progress": 37,
+      "planned": 40,
+      "status": "onSchedule",
+      "lastVisit": "۲ روز پیش",
+      "lastImage": "۱ مرداد ۱۴۰۵",
+      "layerScores": {
+        "physical": 37,
+        "progress": 37,
+        "safety": 75,
+        "quality": 70,
+        "equipment": 50,
+        "materials": 60,
+        "risk": 30,
+        "documents": 55
+      }
+    },
+    {
+      "id": "yard",
+      "name": "محوطه",
+      "kind": "yard",
+      "x": 38,
+      "y": 56,
+      "w": 24,
+      "h": 20,
+      "levels": 0,
+      "owner": "HSE / محوطه",
+      "imageIds": [
+        "img6",
+        "img12"
+      ],
+      "videoIds": [
+        "vid4"
+      ],
+      "docIds": [
+        "doc10"
+      ],
+      "issues": [
+        "انباشت مصالح خارج از محدوده علامت‌گذاری"
+      ],
+      "relatedWorkflows": [],
+      "lastReport": "محوطه شمالی تکمیل · مسیر دسترسی پایدار",
+      "aiNote": "این قسمت تکمیل شده است.",
+      "progress": 100,
+      "planned": 100,
+      "status": "complete",
+      "lastVisit": "دیروز",
+      "lastImage": "۵ مرداد ۱۴۰۵",
+      "layerScores": {
+        "physical": 100,
+        "progress": 100,
+        "safety": 88,
+        "quality": 90,
+        "equipment": 70,
+        "materials": 65,
+        "risk": 15,
+        "documents": 80
+      }
+    },
+    {
+      "id": "facade",
+      "name": "نما",
+      "kind": "facade",
+      "x": 66,
+      "y": 54,
+      "w": 18,
+      "h": 18,
+      "levels": 2,
+      "owner": "پیمانکار نما",
+      "imageIds": [
+        "img9"
+      ],
+      "videoIds": [],
+      "docIds": [
+        "doc6",
+        "doc3"
+      ],
+      "issues": [
+        "منتظر تأیید Shop Drawing نما"
+      ],
+      "relatedWorkflows": [
+        {
+          "id": "wf-proc",
+          "name": "تسریع تدارکات بحرانی"
+        }
+      ],
+      "lastReport": "داربست آماده‌سازی شده · اجرا شروع نشده",
+      "aiNote": "آخرین تصویر مربوط به چند روز پیش است.",
+      "progress": 12,
+      "planned": 20,
+      "status": "notStarted",
+      "lastVisit": "یک هفته پیش",
+      "lastImage": "۳ مرداد ۱۴۰۵",
+      "layerScores": {
+        "physical": 12,
+        "progress": 12,
+        "safety": 55,
+        "quality": 50,
+        "equipment": 30,
+        "materials": 20,
+        "risk": 48,
+        "documents": 40
+      }
+    },
+    {
+      "id": "workshop",
+      "name": "کارگاه",
+      "kind": "workshop",
+      "x": 78,
+      "y": 78,
+      "w": 16,
+      "h": 12,
+      "levels": 1,
+      "owner": "سرپرست کارگاه فلز",
+      "imageIds": [
+        "img2"
+      ],
+      "videoIds": [],
+      "docIds": [
+        "doc4"
+      ],
+      "issues": [
+        "دوباره‌کاری روی دو قطعه اتصال مشاهده شده"
+      ],
+      "relatedWorkflows": [],
+      "lastReport": "ساخت اتصالات فلزی · دو قطعه برگشت به اصلاح",
+      "aiNote": "اینجا دوباره‌کاری مشاهده شده است.",
+      "progress": 64,
+      "planned": 70,
+      "status": "risk",
+      "lastVisit": "دیروز",
+      "lastImage": "۹ مرداد ۱۴۰۵",
+      "layerScores": {
+        "physical": 64,
+        "progress": 64,
+        "safety": 70,
+        "quality": 45,
+        "equipment": 75,
+        "materials": 70,
+        "risk": 55,
+        "documents": 50
+      }
+    }
+  ],
+  "mapCameras": [
+    {
+      "id": "cam-n",
+      "label": "دوربین شمال",
+      "x": 46,
+      "y": 10,
+      "status": "online",
+      "liveHint": "فید زنده · ۱۰۸۰p",
+      "snapshot": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=700&q=80",
+      "aiAnalysis": "جبهه بتن فعال · بدون توقف غیرعادی",
+      "lastSync": "لحظاتی پیش"
+    },
+    {
+      "id": "cam-a",
+      "label": "دوربین بلوک A",
+      "x": 19,
+      "y": 36,
+      "status": "online",
+      "liveHint": "فید زنده · ۷۲۰p",
+      "snapshot": "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=700&q=80",
+      "aiAnalysis": "خواب نسبی جبهه · جرثقیل در حالت آماده‌باش",
+      "lastSync": "۳۰ ثانیه پیش"
+    },
+    {
+      "id": "cam-gate",
+      "label": "دوربین ورودی",
+      "x": 21,
+      "y": 88,
+      "status": "degraded",
+      "liveHint": "فید ناپایدار",
+      "snapshot": "https://images.unsplash.com/photo-1460411794035-42aac080490a?auto=format&fit=crop&w=700&q=80",
+      "aiAnalysis": "صف کامیون · تأخیر تخلیه مصالح",
+      "lastSync": "۴ دقیقه پیش"
+    },
+    {
+      "id": "cam-yard",
+      "label": "دوربین محوطه",
+      "x": 50,
+      "y": 66,
+      "status": "online",
+      "liveHint": "فید زنده",
+      "snapshot": "https://images.unsplash.com/photo-1590496793929-36417d95d294?auto=format&fit=crop&w=700&q=80",
+      "aiAnalysis": "محوطه آرام · انباشت مصالح در گوشه شرق",
+      "lastSync": "۱ دقیقه پیش"
+    }
+  ],
+  "mapEquipment": [
+    {
+      "id": "eq-crane",
+      "name": "جرثقیل برجی ۱",
+      "kind": "crane",
+      "x": 31,
+      "y": 28,
+      "status": "آماده · بدون بار",
+      "lastUse": "۴۵ دقیقه پیش",
+      "gps": "۳۵.۷۲۱۴ · ۵۱.۴۲۸۸",
+      "health": 86,
+      "zoneId": "block-a"
+    },
+    {
+      "id": "eq-crane2",
+      "name": "جرثقیل برجی ۲",
+      "kind": "crane",
+      "x": 58,
+      "y": 22,
+      "status": "فعال · بلند کردن قالب",
+      "lastUse": "در حال استفاده",
+      "gps": "۳۵.۷۲۱۶ · ۵۱.۴۲۹۵",
+      "health": 91,
+      "zoneId": "block-b"
+    },
+    {
+      "id": "eq-exc",
+      "name": "بیل مکانیکی",
+      "kind": "excavator",
+      "x": 28,
+      "y": 74,
+      "status": "آماده",
+      "lastUse": "۲ ساعت پیش",
+      "gps": "۳۵.۷۲۰۸ · ۵۱.۴۲۸۲",
+      "health": 78,
+      "zoneId": "parking"
+    },
+    {
+      "id": "eq-pump",
+      "name": "پمپ بتن",
+      "kind": "pump",
+      "x": 48,
+      "y": 40,
+      "status": "متصل به بلوک B",
+      "lastUse": "۲۰ دقیقه پیش",
+      "gps": "۳۵.۷۲۱۹ · ۵۱.۴۲۹۱",
+      "health": 74,
+      "zoneId": "block-b"
+    },
+    {
+      "id": "eq-fork",
+      "name": "لیفتراک",
+      "kind": "forklift",
+      "x": 12,
+      "y": 14,
+      "status": "جابه‌جایی فولاد",
+      "lastUse": "۱۰ دقیقه پیش",
+      "gps": "۳۵.۷۲۱۲ · ۵۱.۴۲۷۹",
+      "health": 88,
+      "zoneId": "warehouse"
+    }
+  ],
+  "mapAiPins": [
+    {
+      "id": "ai1",
+      "zoneId": "block-a",
+      "message": "بلوک A عقب از برنامه است.",
+      "tone": "danger"
+    },
+    {
+      "id": "ai2",
+      "zoneId": "block-b",
+      "message": "بلوک B جلوتر از برنامه است.",
+      "tone": "ok"
+    },
+    {
+      "id": "ai3",
+      "zoneId": "workshop",
+      "message": "در کارگاه دوباره‌کاری دیده شد.",
+      "tone": "warn"
+    },
+    {
+      "id": "ai4",
+      "zoneId": "facade",
+      "message": "آخرین تصویر نما چند روز قبل است.",
+      "tone": "warn"
+    },
+    {
+      "id": "ai5",
+      "zoneId": "block-c",
+      "message": "بلوک C مدرک اجرایی ندارد.",
+      "tone": "info"
+    }
+  ],
+  "mapTimelineDays": [
+    {
+      "id": "d1",
+      "label": "خرداد",
+      "date": "خرداد ۱۴۰۵",
+      "zoneProgress": {
+        "block-a": 38,
+        "block-b": 42,
+        "block-c": 8,
+        "parking": 15,
+        "yard": 60,
+        "facade": 0,
+        "warehouse": 70,
+        "office": 100,
+        "workshop": 40
+      },
+      "zoneStatus": {
+        "block-a": "onSchedule",
+        "block-b": "onSchedule",
+        "block-c": "notStarted",
+        "parking": "onSchedule",
+        "yard": "onSchedule",
+        "facade": "notStarted",
+        "warehouse": "onSchedule",
+        "office": "complete",
+        "workshop": "onSchedule"
+      }
+    },
+    {
+      "id": "d2",
+      "label": "تیر",
+      "date": "تیر ۱۴۰۵",
+      "zoneProgress": {
+        "block-a": 52,
+        "block-b": 58,
+        "block-c": 14,
+        "parking": 28,
+        "yard": 90,
+        "facade": 5,
+        "warehouse": 75,
+        "office": 100,
+        "workshop": 52
+      },
+      "zoneStatus": {
+        "block-a": "risk",
+        "block-b": "onSchedule",
+        "block-c": "risk",
+        "parking": "onSchedule",
+        "yard": "onSchedule",
+        "facade": "notStarted",
+        "warehouse": "risk",
+        "office": "complete",
+        "workshop": "onSchedule"
+      }
+    },
+    {
+      "id": "d3",
+      "label": "مرداد ۱",
+      "date": "هفته ۱ مرداد",
+      "zoneProgress": {
+        "block-a": 58,
+        "block-b": 68,
+        "block-c": 18,
+        "parking": 33,
+        "yard": 98,
+        "facade": 8,
+        "warehouse": 78,
+        "office": 100,
+        "workshop": 58
+      },
+      "zoneStatus": {
+        "block-a": "delayed",
+        "block-b": "onSchedule",
+        "block-c": "risk",
+        "parking": "onSchedule",
+        "yard": "complete",
+        "facade": "notStarted",
+        "warehouse": "risk",
+        "office": "complete",
+        "workshop": "risk"
+      }
+    },
+    {
+      "id": "d4",
+      "label": "امروز",
+      "date": "هفته ۲ مرداد · امروز",
+      "zoneProgress": {
+        "block-a": 61,
+        "block-b": 74,
+        "block-c": 22,
+        "parking": 37,
+        "yard": 100,
+        "facade": 12,
+        "warehouse": 80,
+        "office": 100,
+        "workshop": 64
+      },
+      "zoneStatus": {
+        "block-a": "delayed",
+        "block-b": "onSchedule",
+        "block-c": "risk",
+        "parking": "onSchedule",
+        "yard": "complete",
+        "facade": "notStarted",
+        "warehouse": "risk",
+        "office": "complete",
+        "workshop": "risk"
+      }
+    }
+  ],
+  "mapStatusColor": {
+    "onSchedule": "#6f9f82",
+    "risk": "#c4a35a",
+    "delayed": "#c17b7b",
+    "complete": "#6b9aab",
+    "notStarted": "#5c6570"
+  }
+}

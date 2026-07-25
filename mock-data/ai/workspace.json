@@ -1,0 +1,78 @@
+{
+  "historyCategories": [
+    {
+      "id": "portfolio",
+      "label": "پورتفویو"
+    },
+    {
+      "id": "capital",
+      "label": "پول و قرارداد"
+    },
+    {
+      "id": "operations",
+      "label": "اجرا"
+    },
+    {
+      "id": "risk",
+      "label": "ریسک"
+    },
+    {
+      "id": "sessions",
+      "label": "جلسات"
+    }
+  ],
+  "roleLabels": {
+    "ceo": "مدیرعامل",
+    "cfo": "مدیر مالی",
+    "project": "مدیر پروژه",
+    "operations": "مدیر عملیات"
+  },
+  "welcomeFollowUps": [
+    "کدام پروژه بیشترین ریسک را دارد؟",
+    "وضعیت نقدینگی این هفته چگونه است؟",
+    "امروز سه تصمیمی که باید بگیرم چیست؟"
+  ],
+  "initialConversations": [
+    {
+      "id": "conv-1",
+      "title": "ریسک برج آریا",
+      "category": "risk",
+      "preview": "مسیر بحرانی و اثر نقدینگی",
+      "updatedAt": "دیروز",
+      "messages": [
+        {
+          "id": "m1",
+          "role": "user",
+          "content": "چرا برج آریا قرمز شده؟"
+        },
+        {
+          "id": "m2",
+          "role": "assistant",
+          "content": "برج آریا به‌خاطر شکستن مسیر بحرانی و قفل شدن صورت‌وضعیت فاز ۲ وارد وضعیت قرمز شده است."
+        }
+      ]
+    },
+    {
+      "id": "conv-2",
+      "title": "نقدینگی هفته",
+      "category": "capital",
+      "preview": "۱۸.۴ میلیارد در معرض ریسک",
+      "updatedAt": "۲ روز پیش",
+      "messages": [
+        {
+          "id": "m3",
+          "role": "user",
+          "content": "وضعیت نقدینگی این هفته چگونه است؟"
+        }
+      ]
+    },
+    {
+      "id": "conv-3",
+      "title": "عملکرد پیمانکاران",
+      "category": "operations",
+      "preview": "پیمانکار سازه زیر آستانه",
+      "updatedAt": "هفته گذشته",
+      "messages": []
+    }
+  ]
+}

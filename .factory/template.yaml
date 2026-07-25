@@ -1,0 +1,14 @@
+schema_version: 1
+name: machine-template
+framework: nextjs
+node: "22"
+health_path: /api/health
+required_scripts:
+  - lint
+  - test
+  - build
+  - start
+docker:
+  compose_file: docker-compose.yml
+  service: web
+factory_dir: .factory
