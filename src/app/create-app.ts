@@ -23,6 +23,8 @@ import { IndustryEngine } from "../industries/industry-engine.js";
 import { FsMasterBuildSpecificationRepository } from "../specifications/master-build-specification-repository.js";
 import { FsMasterPromptRepository } from "../prompts/master-prompt-repository.js";
 import { CompanyPlanningService } from "../prompts/company-planning-service.js";
+import { FsCompanyOSBlueprintRepository } from "../blueprints/company-os-blueprint-repository.js";
+import { CompanyBlueprintPlanningService } from "../blueprints/company-blueprint-planning-service.js";
 import { mkdir } from "node:fs/promises";
 
 export type AppServices = {
@@ -39,6 +41,7 @@ export type AppServices = {
   discovery: CompanyDiscoveryService;
   industry: IndustryEngine;
   planning: CompanyPlanningService;
+  blueprint: CompanyBlueprintPlanningService;
   commandContext: CommandContext;
 };
 
@@ -58,7 +61,9 @@ export async function createAppServices(
   await mkdir(config.logsDir, { recursive: true });
   await mkdir(config.memoryDir, { recursive: true });
   const memorySpecsDir = resolve(config.dataRoot, "memory", "specifications");
+  const memoryBlueprintsDir = resolve(config.dataRoot, "memory", "blueprints");
   await mkdir(memorySpecsDir, { recursive: true });
+  await mkdir(memoryBlueprintsDir, { recursive: true });
   await mkdir(resolve(config.dataRoot, "projects-meta"), { recursive: true });
 
   const companies = new FsCompanyRepository(config.companiesDir);
@@ -116,6 +121,21 @@ export async function createAppServices(
     jobs: jobManager,
     logger,
   });
+  const blueprints = new FsCompanyOSBlueprintRepository(
+    config.projectsRoot,
+    memoryBlueprintsDir,
+  );
+  const blueprint = new CompanyBlueprintPlanningService({
+    projectsRoot: config.projectsRoot,
+    registry,
+    knowledge,
+    industry,
+    specifications,
+    prompts,
+    blueprints,
+    jobs: jobManager,
+    logger,
+  });
 
   const commandContext: CommandContext = {
     registry,
@@ -126,6 +146,7 @@ export async function createAppServices(
     discovery,
     knowledge,
     planning,
+    blueprint,
   };
 
   return {
@@ -142,6 +163,7 @@ export async function createAppServices(
     discovery,
     industry,
     planning,
+    blueprint,
     commandContext,
   };
 }

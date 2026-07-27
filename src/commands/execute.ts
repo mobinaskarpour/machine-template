@@ -5,6 +5,7 @@ import type { JobRepository } from "../persistence/job-repository.js";
 import type { CompanyDiscoveryService } from "../discovery/company-discovery-service.js";
 import type { CompanyKnowledgeService } from "../knowledge/company-knowledge-service.js";
 import type { CompanyPlanningService } from "../prompts/company-planning-service.js";
+import type { CompanyBlueprintPlanningService } from "../blueprints/company-blueprint-planning-service.js";
 import { AppError, isAppError, toUserMessage } from "../shared/errors.js";
 import type { ParsedCommand, OpsAction } from "./parse.js";
 import type { Logger } from "pino";
@@ -25,27 +26,28 @@ export type CommandContext = {
   discovery: CompanyDiscoveryService;
   knowledge: CompanyKnowledgeService;
   planning: CompanyPlanningService;
+  blueprint: CompanyBlueprintPlanningService;
 };
 
 const INTRO = `THE MACHINE — Autonomous AI Company OS Builder
 
-Phase 2 is online: company discovery, industry resolution, MasterBuildSpecification, and Master Prompt.
+Phase 3 is online: discovery, planning, and Company OS Blueprint generation.
 
-I can discover public company information, select an Industry Pack, and produce planning artifacts.
-Application generation and deployment are not implemented yet.`;
+I can discover companies, build MasterBuildSpecification and Master Prompt, and produce an implementation-ready blueprint.
+Application source generation and deployment are not implemented yet.`;
 
-const HELP = `Available commands (Phase 2):
+const HELP = `Available commands (Phase 3):
 
 /start — introduction
 /help — this message
 /status <job-id|company-name> — persistent status
-/demo <company-name> — discover + plan (when knowledge is READY)
-/demo <company-name> | https://example.com — discover with explicit website, then plan
+/demo <company-name> — discover → plan → blueprint (when knowledge is READY)
+/demo <company-name> | https://example.com — explicit website, then plan + blueprint
 /edit <company-name>: <request> — placeholder (NOT_IMPLEMENTED)
 /ops <company-name>: <action> — status | logs | restart | ssl
 
 Not implemented yet:
-• OS / dashboard / workflow / agent generation
+• application source generation
 • deployment, restarts, SSL`;
 
 export async function executeCommand(
@@ -181,11 +183,22 @@ async function handleDemo(
       ).project.id,
     );
 
-    return {
-      ok: planning.ok,
-      jobId: planning.jobId,
+    const blueprint = await ctx.blueprint.blueprintWithArtifacts({
+      knowledge: planning.knowledge,
+      resolution: planning.resolution,
+      specification: planning.specification,
+      prompt: planning.prompt,
       companyId: planning.companyId,
-      message: planning.message,
+      projectId: (
+        await ctx.registry.resolveByName(planning.knowledge.displayName)
+      ).project.id,
+    });
+
+    return {
+      ok: blueprint.ok,
+      jobId: blueprint.jobId,
+      companyId: blueprint.companyId,
+      message: blueprint.message,
     };
   } catch (error) {
     if (isAppError(error)) {

@@ -617,7 +617,7 @@ describe("telegram demo command", () => {
     );
     expect(result.ok).toBe(true);
     expect(result.message).toMatch(
-      /Company planning completed|برنامه‌ریزی شرکت با موفقیت تکمیل شد/,
+      /Blueprint سیستم‌عامل شرکتی تکمیل شد|Company OS blueprint completed/,
     );
     expect(result.message).not.toContain("Build Successful");
   });

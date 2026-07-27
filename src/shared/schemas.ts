@@ -17,6 +17,8 @@ export const CompanyRecordSchema = z.object({
   aliases: z.array(z.string()),
   status: CompanyStatusSchema,
   workspacePath: z.string().min(1),
+  /** Preferred readable slug for future migration; never auto-renames workspace. */
+  canonicalSlugSuggestion: z.string().optional(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });

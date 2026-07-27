@@ -1,57 +1,49 @@
 # THE MACHINE — Autonomous AI Company OS Builder
 
-Phase 2: company discovery, Industry Engine, MasterBuildSpecification, and Master Prompt planning.
+Phase 3: Company Discovery → Planning → **Company OS Blueprint** (no application code generation).
 
 ## What works now
 
-- Telegram bot commands (`/start`, `/help`, `/status`, `/demo`, `/edit`, `/ops`)
-- `/demo <company>` discovery → planning (when knowledge is READY)
-- `/demo <company> | https://site` explicit website discovery, then planning
-- Safe public web fetch (SSRF protections)
-- Deterministic extraction + knowledge synthesis
-- Industry pack resolution (10 packs)
-- MasterBuildSpecification merge + prioritization
-- Master Prompt builder (canonical inputs only)
-- Dual persistence for knowledge and specifications
-- CLI: `npm run discover -- "Company" [url]`
-- CLI: `npm run plan -- "Company"`
+- `/demo` pipeline through blueprint completion
+- Industry Engine + MasterBuildSpecification + Master Prompt
+- Deterministic Company OS Blueprint (RBAC, navigation, dashboards, workflows, agents, data model, mock-data plan, implementation plan)
+- CLIs: `discover`, `plan`, `blueprint`, `migrate:slug --dry-run`
 
 ## Not implemented yet
 
-Application generation, dashboards/workflows/agents execution, deploy, scoped edits, ops restart/SSL.
+Application source generation, builds, deployments, executable agents, `/edit` execution, ops restart/SSL.
 
-Phase 2 prepares canonical planning artifacts. It does **not** generate, build, or deploy a company application.
+Phase 3 generates an implementation-ready Company OS Blueprint. It does **not** generate source code, build an application, or deploy anything.
 
 ## Setup
 
 ```bash
 cp .env.example .env
-# set TELEGRAM_BOT_TOKEN (rotated) and optional TAVILY_API_KEY / SERPER_API_KEY
 npm install
 npm run typecheck
 npm test
 npm run bot
 ```
 
-## Example verification (fixture / explicit website)
+## Verification examples
 
 ```bash
 npm run discover -- "زر ماکارون" "https://www.zarmacaron.com/"
 npm run plan -- "زر ماکارون"
+npm run blueprint -- "زر ماکارون"
+npm run migrate:slug -- --dry-run "زر ماکارون"
 ```
 
 ## Docs
 
 - [ARCHITECTURE](docs/ARCHITECTURE.md)
 - [PHASES](docs/PHASES.md)
+- [COMPANY-OS-BLUEPRINT](docs/COMPANY-OS-BLUEPRINT.md)
+- [BLUEPRINT-VALIDATION](docs/BLUEPRINT-VALIDATION.md)
+- [BLUEPRINT-RBAC](docs/BLUEPRINT-RBAC.md)
+- [BLUEPRINT-WORKFLOWS](docs/BLUEPRINT-WORKFLOWS.md)
+- [BLUEPRINT-DATA-MODEL](docs/BLUEPRINT-DATA-MODEL.md)
+- [BLUEPRINT-MOCK-DATA-PLAN](docs/BLUEPRINT-MOCK-DATA-PLAN.md)
 - [INDUSTRY-ENGINE](docs/INDUSTRY-ENGINE.md)
-- [INDUSTRY-PACKS](docs/INDUSTRY-PACKS.md)
-- [MASTER-BUILD-SPECIFICATION](docs/MASTER-BUILD-SPECIFICATION.md)
-- [MASTER-PROMPT](docs/MASTER-PROMPT.md)
-- [COMPANY-DISCOVERY](docs/COMPANY-DISCOVERY.md)
-- [COMPANY-KNOWLEDGE](docs/COMPANY-KNOWLEDGE.md)
-- [DISCOVERY-PROVIDERS](docs/DISCOVERY-PROVIDERS.md)
 - [SECURITY](docs/SECURITY.md)
 - [DATA-LAYOUT](docs/DATA-LAYOUT.md)
-
-Previous Next.js demo template is preserved under `templates/machine-demo/`.

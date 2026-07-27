@@ -1,34 +1,24 @@
-# Data layout — Phase 2
+# Data layout — Phase 3
 
 ```text
 data/
-├── companies/
-│   ├── index.json
-│   └── <companyId>.json
-├── projects-meta/
-│   ├── index.json
-│   └── <projectId>.json
-├── jobs/
-│   └── <jobId>.json
 ├── memory/
-│   ├── companies/<slug>.json              # knowledge mirror
-│   └── specifications/<slug>.json         # specification mirror
-└── projects/
-    └── <company-slug>/
-        ├── .factory/
-        │   ├── knowledge.json
-        │   ├── industry-resolution.json
-        │   ├── master-build-specification.json
-        │   ├── master-prompt.json
-        │   ├── master-prompt.txt
-        │   └── history/
-        │       ├── knowledge/
-        │       ├── specifications/
-        │       └── prompts/
-        ├── generated/          # reserved (Phase 3+)
-        ├── source/             # reserved
-        ├── logs/
-        └── artifacts/
+│   ├── companies/<slug>.json
+│   ├── specifications/<slug>.json
+│   └── blueprints/<slug>.json
+└── projects/<slug>/.factory/
+    ├── knowledge.json
+    ├── industry-resolution.json
+    ├── master-build-specification.json
+    ├── master-prompt.json
+    ├── master-prompt.txt
+    ├── company-os-blueprint.json
+    ├── company-os-blueprint-summary.json
+    └── history/
+        ├── knowledge/
+        ├── specifications/
+        ├── prompts/
+        └── blueprints/
 ```
 
-Runtime company data is gitignored. Do not commit discovery or planning artifacts.
+Runtime artifacts are gitignored.

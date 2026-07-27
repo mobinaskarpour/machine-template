@@ -1,0 +1,10 @@
+{
+  "note": "TEST FIXTURE ONLY — permission boundary expectations",
+  "requiredSensitiveOperations": [
+    "approve-invoice-payment",
+    "release-quality-hold",
+    "delete-operational-record",
+    "export-sensitive-data"
+  ],
+  "agentModesAllowed": ["READ_ONLY", "SUGGEST", "APPROVAL_REQUIRED"]
+}

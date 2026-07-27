@@ -2,7 +2,7 @@ import type { CompanyRepository } from "../persistence/company-repository.js";
 import type { ProjectRepository } from "../persistence/project-repository.js";
 import type { CompanyRecord, ProjectRecord } from "../shared/schemas.js";
 import { newId, nowIso } from "../shared/ids.js";
-import { createSlug, assertSafeSlug } from "./slug.js";
+import { createSlug, assertSafeSlug, suggestCanonicalSlug } from "./slug.js";
 import { WorkspaceManager } from "../workspaces/workspace-manager.js";
 import { AppError } from "../shared/errors.js";
 import { compactCompanyName, isLikelySameCompanyName } from "./name-normalize.js";
@@ -39,6 +39,12 @@ export class CompanyRegistry {
       ) {
         await this.companies.update(existing.id, {
           aliases: [...existing.aliases, name],
+        });
+      }
+      const suggestion = suggestCanonicalSlug(existing.displayName);
+      if (existing.canonicalSlugSuggestion !== suggestion) {
+        await this.companies.update(existing.id, {
+          canonicalSlugSuggestion: suggestion,
         });
       }
       const refreshed = (await this.companies.getById(existing.id)) ?? existing;
@@ -85,6 +91,7 @@ export class CompanyRegistry {
       aliases,
       status: "CREATED",
       workspacePath: ws.paths.root,
+      canonicalSlugSuggestion: suggestCanonicalSlug(name),
       createdAt: timestamp,
       updatedAt: timestamp,
     });

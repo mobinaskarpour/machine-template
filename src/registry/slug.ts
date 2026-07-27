@@ -3,7 +3,7 @@ import { AppError } from "../shared/errors.js";
 
 /**
  * Lightweight Persian→Latin map for common letters.
- * Not a full linguistic transliterator — Phase 0 deterministic helper only.
+ * Company-agnostic — no brand-specific branches.
  */
 const PERSIAN_MAP: Record<string, string> = {
   آ: "a",
@@ -37,22 +37,33 @@ const PERSIAN_MAP: Record<string, string> = {
   ل: "l",
   م: "m",
   ن: "n",
-  و: "v",
+  // و is commonly a long vowel "o/u" in brand romanization (ماکارون → macaron)
+  و: "o",
   ه: "h",
-  ی: "y",
-  ي: "y",
+  ی: "i",
+  ي: "i",
   ء: "",
-  ئ: "y",
-  ؤ: "v",
+  ئ: "i",
+  ؤ: "o",
   ة: "h",
   "‌": "-", // ZWNJ
 };
 
 const HAS_PERSIAN = /[\u0600-\u06FF]/;
 
+/** Normalize Arabic letter variants to Persian equivalents before transliteration. */
+export function normalizePersianLetters(input: string): string {
+  return input
+    .normalize("NFC")
+    .replace(/ك/g, "ک")
+    .replace(/ي/g, "ی")
+    .replace(/ة/g, "ه");
+}
+
 function transliteratePersian(input: string): string {
+  const normalized = normalizePersianLetters(input);
   let out = "";
-  for (const ch of input) {
+  for (const ch of normalized) {
     if (PERSIAN_MAP[ch] !== undefined) {
       out += PERSIAN_MAP[ch];
     } else {
@@ -60,6 +71,27 @@ function transliteratePersian(input: string): string {
     }
   }
   return out;
+}
+
+/**
+ * Insert a short "a" only for the leading bare consonant pair in each word
+ * (e.g. "zr" → "zar") without altering later syllables like "makaron".
+ */
+function insertShortVowels(latin: string): string {
+  return latin
+    .split(/(\s+)/)
+    .map((part) => {
+      if (/^\s+$/.test(part)) return part;
+      return part.replace(
+        /^([bcdfghjklmnpqrstvwxyz])([bcdfghjklmnpqrstvwxz])/i,
+        (match, a: string, b: string) => {
+          const pair = `${a}${b}`.toLowerCase();
+          if (["ch", "kh", "sh", "zh", "gh"].includes(pair)) return match;
+          return `${a}a${b}`;
+        },
+      );
+    })
+    .join("");
 }
 
 function sanitizeSlugCandidate(raw: string): string {
@@ -79,6 +111,29 @@ export type SlugOptions = {
 };
 
 /**
+ * Preferred readable slug for a display name (does not check collisions).
+ * Existing workspaces are never renamed automatically — use migration CLI for that.
+ */
+export function suggestCanonicalSlug(displayName: string): string {
+  const name = displayName.trim();
+  if (!name) {
+    throw new AppError("VALIDATION_ERROR", "Company name cannot be empty");
+  }
+  const source = HAS_PERSIAN.test(name)
+    ? insertShortVowels(transliteratePersian(name))
+    : name;
+  let base = sanitizeSlugCandidate(source);
+  if (!base || !/[a-z0-9]/.test(base)) {
+    base = `company-${shortStableHash(name)}`;
+  }
+  if (base.length > 60) {
+    const hash = shortStableHash(name, 8);
+    base = `${base.slice(0, 50).replace(/-+$/g, "")}-${hash}`;
+  }
+  return base;
+}
+
+/**
  * Deterministic, filesystem-safe slug. Never accepts a path.
  * Telegram input must go through this — never used as a path segment raw.
  */
@@ -91,22 +146,11 @@ export function createSlug(displayName: string, options: SlugOptions = {}): stri
     // Path-like input is rejected for slug source safety (we still slugify after stripping)
   }
 
-  const source = HAS_PERSIAN.test(name) ? transliteratePersian(name) : name;
-  let base = sanitizeSlugCandidate(source);
-
-  if (!base || !/[a-z0-9]/.test(base)) {
-    base = `company-${shortStableHash(name)}`;
-  }
+  let base = suggestCanonicalSlug(name);
 
   if (options.prefix) {
     const prefix = sanitizeSlugCandidate(options.prefix);
     base = prefix ? `${prefix}-${base}` : base;
-  }
-
-  // Cap length for filesystem friendliness
-  if (base.length > 60) {
-    const hash = shortStableHash(name, 8);
-    base = `${base.slice(0, 50).replace(/-+$/g, "")}-${hash}`;
   }
 
   const taken = new Set(options.taken ?? []);

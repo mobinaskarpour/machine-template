@@ -28,7 +28,19 @@ export type ErrorCode =
   | "KNOWLEDGE_PERSISTENCE_FAILED"
   | "KNOWLEDGE_MIRROR_MISMATCH"
   | "CODEX_NOT_AVAILABLE"
-  | "CODEX_EXECUTION_FAILED";
+  | "CODEX_EXECUTION_FAILED"
+  | "BLUEPRINT_SOURCE_MISMATCH"
+  | "BLUEPRINT_INVALID_REFERENCE"
+  | "BLUEPRINT_DUPLICATE_ID"
+  | "BLUEPRINT_DUPLICATE_ROUTE"
+  | "BLUEPRINT_UNSAFE_ROUTE"
+  | "BLUEPRINT_INVALID_WORKFLOW"
+  | "BLUEPRINT_INVALID_PERMISSION"
+  | "BLUEPRINT_INVALID_AGENT_MODE"
+  | "BLUEPRINT_VALIDATION_FAILED"
+  | "BLUEPRINT_PERSISTENCE_FAILED"
+  | "BLUEPRINT_MIRROR_MISMATCH"
+  | "BLUEPRINT_NOT_READY";
 
 export class AppError extends Error {
   readonly code: ErrorCode;
@@ -82,6 +94,11 @@ const DISCOVERY_USER_MESSAGES: Partial<Record<ErrorCode, string>> = {
   KNOWLEDGE_MIRROR_MISMATCH: "Knowledge mirror copies did not match after save.",
   CODEX_NOT_AVAILABLE: "Codex CLI is not available for synthesis.",
   CODEX_EXECUTION_FAILED: "Codex synthesis failed.",
+  BLUEPRINT_SOURCE_MISMATCH: "Planning artifacts are out of sync. Re-run plan, then blueprint.",
+  BLUEPRINT_VALIDATION_FAILED: "Company OS blueprint failed validation.",
+  BLUEPRINT_NOT_READY: "Blueprint is not ready for code generation.",
+  BLUEPRINT_MIRROR_MISMATCH: "Blueprint mirror copies did not match after save.",
+  BLUEPRINT_PERSISTENCE_FAILED: "Failed to save company OS blueprint.",
 };
 
 export function toUserMessage(error: unknown): string {

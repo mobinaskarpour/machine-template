@@ -1,44 +1,23 @@
-# Architecture — Phase 0–2
+# Architecture — Phase 0–3
 
-## Shape
-
-Modular monolith. Business logic does not import Telegram.
+Modular monolith. Telegram is an adapter only.
 
 ```text
-telegram/  →  commands/parse  →  commands/execute
-                                   ↓
-         discovery → knowledge → industry → specification → prompts
-                                   ↓
-                              persistence/
-                                   ↓
-                                 data/
+telegram/commands → discovery → knowledge → industry → specification → prompts → blueprints
+                                         ↓
+                                   persistence / data/
 ```
 
-`runners/SafeCommandRunner` is available for future deploy/ops tasks. It is **not** exposed to arbitrary Telegram text.
-
-## Modules
+## Phase 3 modules
 
 | Module | Responsibility |
 |--------|----------------|
-| `app/` | Composition root, discover/plan CLIs |
-| `telegram/` | Telegraf wiring only |
-| `commands/` | Deterministic parsers + handlers |
-| `discovery/` | Company discovery orchestrator |
-| `knowledge/` | CompanyKnowledge schema + dual persistence |
-| `industries/` | Packs, resolver, industry engine |
-| `specifications/` | MasterBuildSpecification |
-| `prompts/` | Master Prompt builder + planning service |
-| `jobs/` | Job lifecycle / transitions |
-| `registry/` | Company resolution + slug service |
-| `workspaces/` | Isolated project directories |
-| `persistence/` | Repository interfaces + FS JSON impl |
-| `runners/` | Safe spawn / `/bin/bash -lc` |
-| `config/` | Zod-validated env |
-| `logging/` | Pino + redaction hooks |
-| `security/` | Path guards, SSRF, secret redaction |
-| `shared/` | Errors, ids, Zod domain schemas |
-| `future/` | Pipeline contracts (no real impl) |
+| `blueprints/` | CompanyOSBlueprint schema, builders, validation, persistence |
+| `app/blueprint-cli.ts` | Service-level blueprint CLI |
+| `app/migrate-slug-cli.ts` | Dry-run slug migration reporter |
 
-## Phase 2 note
+## Slug backward compatibility
 
-Phase 2 prepares canonical planning artifacts. It does not generate, build, or deploy a company application.
+Improved Persian transliteration may suggest `zar-makaron` for `زر ماکارون`. Existing workspaces (e.g. `zr-makarvn`) are **not** renamed automatically. `canonicalSlugSuggestion` records the preferred future slug. Use `npm run migrate:slug -- --dry-run` to inspect.
+
+Phase 3 generates an implementation-ready Company OS Blueprint. It does not generate source code, build an application, or deploy anything.

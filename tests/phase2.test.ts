@@ -408,7 +408,9 @@ describe("Phase 2 pipeline persistence", () => {
       services.commandContext,
     );
     expect(result.ok).toBe(true);
-    expect(result.message).toMatch(/برنامه‌ریزی شرکت با موفقیت تکمیل شد|Company planning completed/);
+    expect(result.message).toMatch(
+      /Blueprint سیستم‌عامل شرکتی تکمیل شد|Company OS blueprint completed/,
+    );
     expect(result.message).not.toContain("Build Successful");
   });
 });

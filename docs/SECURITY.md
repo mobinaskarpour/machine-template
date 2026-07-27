@@ -52,3 +52,11 @@ Do not store secrets under `data/`, `.factory/` workspace metadata, or job outpu
 - No application generation or deployment from planning
 - Agents remain specification records only
 - Runtime knowledge/specification mirrors stay gitignored
+
+## Phase 3 additions
+
+- Blueprint never contains raw research HTML or live secrets
+- Agents remain non-executing planning records
+- No source generation, build, or deploy from blueprint
+- Slug migration never runs automatically at startup
+- Runtime blueprints stay gitignored
