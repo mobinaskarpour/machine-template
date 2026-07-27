@@ -12,10 +12,13 @@ data/companies/*
 !data/companies/.gitkeep
 data/projects/*
 !data/projects/.gitkeep
-data/jobs/*
-!data/jobs/.gitkeep
-data/logs/*
-!data/logs/.gitkeep
+data/memory/*
+!data/memory/.gitkeep
+!data/memory/companies/
+data/memory/companies/*
+!data/memory/companies/.gitkeep
+data/projects-meta/*
+!data/projects-meta/.gitkeep
 
 .vercel
 .next

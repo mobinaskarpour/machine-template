@@ -1,17 +1,9 @@
 export class NotImplementedError extends Error {
   readonly code = "NOT_IMPLEMENTED" as const;
   constructor(service: string, method: string) {
-    super(`${service}.${method} is not implemented in Phase 0`);
+    super(`${service}.${method} is not implemented yet`);
     this.name = "NotImplementedError";
   }
-}
-
-export interface CompanyDiscoveryService {
-  discover(companyName: string): Promise<never>;
-}
-
-export interface CompanyKnowledgeService {
-  build(companyId: string): Promise<never>;
 }
 
 export interface IndustryEngine {
@@ -62,18 +54,6 @@ export interface CodeGenerationProvider {
   generate(input: GenerationRequest): Promise<GenerationResult>;
 }
 
-export const notImplementedDiscovery: CompanyDiscoveryService = {
-  async discover() {
-    throw new NotImplementedError("CompanyDiscoveryService", "discover");
-  },
-};
-
-export const notImplementedKnowledge: CompanyKnowledgeService = {
-  async build() {
-    throw new NotImplementedError("CompanyKnowledgeService", "build");
-  },
-};
-
 export const notImplementedIndustry: IndustryEngine = {
   async resolve() {
     throw new NotImplementedError("IndustryEngine", "resolve");
@@ -122,7 +102,6 @@ export const notImplementedOps: OperationsService = {
   },
 };
 
-/** Codex CLI adapter will implement this in a later phase. */
 export const notImplementedCodegen: CodeGenerationProvider = {
   async generate() {
     throw new NotImplementedError("CodeGenerationProvider", "generate");

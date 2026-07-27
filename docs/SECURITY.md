@@ -38,3 +38,10 @@ Do not log full `process.env`.
 ## Data
 
 Do not store secrets under `data/`, `.factory/` workspace metadata, or job outputs.
+
+
+## Phase 1 additions
+
+- SSRF-safe URL validation and redirect checks
+- Untrusted webpage content delimiting / prompt-injection warnings
+- Discovery artifacts store redacted text samples only (not secrets)

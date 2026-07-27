@@ -52,3 +52,11 @@ telegram/  →  commands/parse  →  commands/execute
 Writes use temp file + `fsync` + `rename`. Index updates use an in-process mutex.
 
 Workspace trees live separately under `PROJECTS_ROOT/<company-slug>/`.
+
+
+## Phase 1 modules
+
+- `discovery/` — orchestrator, ranking, extraction, providers
+- `knowledge/` — schema, validation, dual-persistence repository
+- `integrations/` — Tavily, Serper, Codex adapters
+- `security/safe-url.ts`, `security/untrusted-content.ts`

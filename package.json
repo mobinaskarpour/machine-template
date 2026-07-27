@@ -2,7 +2,7 @@
   "name": "the-machine",
   "version": "0.1.0",
   "private": true,
-  "description": "THE MACHINE — Autonomous AI Company OS Builder (Phase 0 foundation)",
+  "description": "THE MACHINE — Autonomous AI Company OS Builder (Phase 1 discovery)",
   "type": "module",
   "engines": {
     "node": ">=18.18.0"
@@ -14,7 +14,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "bot": "tsx src/app/main.ts"
+    "bot": "tsx src/app/main.ts",
+    "discover": "tsx src/app/discover-cli.ts"
   },
   "dependencies": {
     "dotenv": "^16.6.1",

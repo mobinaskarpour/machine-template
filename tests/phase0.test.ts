@@ -186,31 +186,44 @@ describe("command parsing", () => {
 
 describe("command handlers", () => {
   async function ctx(root: string) {
-    const logger = createLogger({ level: "silent" });
-    const companies = new FsCompanyRepository(join(root, "companies"));
-    const projects = new FsProjectRepository(join(root, "projects-meta"));
-    const jobRepo = new FsJobRepository(join(root, "jobs"));
-    const workspaces = new WorkspaceManager(join(root, "projects"));
-    const registry = new CompanyRegistry(companies, projects, workspaces);
-    const jobs = new JobManager(jobRepo, logger);
-    return { registry, jobs, companies, jobRepo, logger };
+    const { loadConfig } = await import("../src/config/env.js");
+    const { createAppServices } = await import("../src/app/create-app.js");
+    const { DeterministicKnowledgeSynthesisProvider } = await import(
+      "../src/discovery/providers/deterministic-synthesis.js"
+    );
+    const config = loadConfig(
+      {
+        DATA_ROOT: root,
+        PROJECTS_ROOT: `${root}/projects`,
+        LOG_LEVEL: "silent",
+        NODE_ENV: "test",
+      },
+      { cwd: root, requireTelegramToken: false },
+    );
+    const services = await createAppServices(config, createLogger({ level: "silent" }), {
+      synthesis: new DeterministicKnowledgeSynthesisProvider(),
+      fetcher: {
+        async fetchPage() {
+          throw new (await import("../src/shared/errors.js")).AppError(
+            "DISCOVERY_FETCH_FAILED",
+            "phase0 fixture fetch disabled",
+          );
+        },
+      },
+    });
+    return services.commandContext;
   }
 
-  it("runs /demo foundation lifecycle to SUCCEEDED without claiming build success", async () => {
+  it("runs /demo and requests website when no search provider", async () => {
     const root = await tempRoot();
     const context = await ctx(root);
     const result = await executeCommand(
       { kind: "demo", companyName: "ایران فریمکو" },
       context,
     );
-    expect(result.ok).toBe(true);
-    expect(result.jobId).toBeTruthy();
-    expect(result.message).toContain("NOT implemented");
+    expect(result.ok).toBe(false);
     expect(result.message.toLowerCase()).not.toContain("build successful");
-
-    const job = await context.jobs.require(result.jobId!);
-    expect(job.status).toBe("SUCCEEDED");
-    expect(job.type).toBe("DEMO");
+    expect(result.jobId).toBeTruthy();
   });
 
   it("marks /edit as FAILED with NOT_IMPLEMENTED", async () => {
@@ -229,7 +242,11 @@ describe("command handlers", () => {
   it("ops allowlist: status works; logs returns NOT_IMPLEMENTED", async () => {
     const root = await tempRoot();
     const context = await ctx(root);
-    await executeCommand({ kind: "demo", companyName: "Acme" }, context);
+    // create company via edit path resolve
+    await executeCommand(
+      { kind: "edit", companyName: "Acme", request: "noop" },
+      context,
+    );
 
     const status = await executeCommand(
       { kind: "ops", companyName: "Acme", action: "status" },

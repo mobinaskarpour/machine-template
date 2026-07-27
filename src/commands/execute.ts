@@ -2,10 +2,11 @@ import type { CompanyRegistry } from "../registry/company-registry.js";
 import type { JobManager } from "../jobs/job-manager.js";
 import type { CompanyRepository } from "../persistence/company-repository.js";
 import type { JobRepository } from "../persistence/job-repository.js";
-import { AppError, toErrorRecord, toUserMessage } from "../shared/errors.js";
+import type { CompanyDiscoveryService } from "../discovery/company-discovery-service.js";
+import type { CompanyKnowledgeService } from "../knowledge/company-knowledge-service.js";
+import { AppError, isAppError, toUserMessage } from "../shared/errors.js";
 import type { ParsedCommand, OpsAction } from "./parse.js";
 import type { Logger } from "pino";
-import { withJobContext } from "../logging/logger.js";
 
 export type CommandResult = {
   ok: boolean;
@@ -20,27 +21,29 @@ export type CommandContext = {
   companies: CompanyRepository;
   jobRepo: JobRepository;
   logger: Logger;
+  discovery: CompanyDiscoveryService;
+  knowledge: CompanyKnowledgeService;
 };
 
 const INTRO = `THE MACHINE — Autonomous AI Company OS Builder
 
-Phase 0 foundation is online.
-I can create company workspaces, track jobs, and route commands.
+Phase 1 is online: company discovery and CompanyKnowledge.
 
-Discovery, generation, and deployment are not implemented yet.`;
+I can discover public company information, validate it, and save structured knowledge.
+Application generation and deployment are not implemented yet.`;
 
-const HELP = `Available commands (Phase 0):
+const HELP = `Available commands (Phase 1):
 
 /start — introduction
 /help — this message
 /status <job-id|company-name> — persistent status
-/demo <company-name> — foundation lifecycle (no generation)
+/demo <company-name> — discover company knowledge
+/demo <company-name> | https://example.com — discover with explicit website
 /edit <company-name>: <request> — placeholder (NOT_IMPLEMENTED)
 /ops <company-name>: <action> — status | logs | restart | ssl
 
-Placeholders (not implemented yet):
-• company research / discovery
-• OS generation (brand, dashboards, workflows, agents)
+Not implemented yet:
+• OS / dashboard / workflow / agent generation
 • deployment, restarts, SSL`;
 
 export async function executeCommand(
@@ -55,7 +58,7 @@ export async function executeCommand(
     case "status":
       return handleStatus(parsed.target, parsed.targetType, ctx);
     case "demo":
-      return handleDemo(parsed.companyName, ctx);
+      return handleDemo(parsed.companyName, parsed.websiteHint, ctx);
     case "edit":
       return handleEdit(parsed.companyName, parsed.request, ctx);
     case "ops":
@@ -76,7 +79,6 @@ async function handleStatus(
   if (targetType === "job") {
     const job = await ctx.jobs.get(target);
     if (!job) {
-      // also try as company
       const company = await ctx.registry.findByName(target);
       if (!company) {
         throw new AppError("NOT_FOUND", `No job or company matched: ${target}`);
@@ -94,7 +96,6 @@ async function handleStatus(
         `stage: ${job.currentStage ?? "—"}`,
         `progress: ${job.progress ?? 0}%`,
         job.error ? `error: ${job.error.code} — ${job.error.message}` : null,
-        job.output ? `output: ${JSON.stringify(job.output)}` : null,
       ]
         .filter(Boolean)
         .join("\n"),
@@ -103,11 +104,8 @@ async function handleStatus(
 
   const company = await ctx.registry.findByName(target);
   if (!company) {
-    // last chance: job id misclassified
     const job = await ctx.jobs.get(target);
-    if (job) {
-      return handleStatus(target, "job", ctx);
-    }
+    if (job) return handleStatus(target, "job", ctx);
     throw new AppError("NOT_FOUND", `Company not found: ${target}`);
   }
   return formatCompanyStatus(company.id, ctx);
@@ -121,13 +119,12 @@ async function formatCompanyStatus(
   if (!company) {
     throw new AppError("NOT_FOUND", `Company not found: ${companyId}`);
   }
+  const knowledge = await ctx.knowledge.get(company.slug);
   const recent = await ctx.jobRepo.list({ companyId, limit: 5 });
   const jobsLines =
     recent.length === 0
       ? "jobs: none"
-      : recent
-          .map((j) => `• ${j.id} [${j.type}] ${j.status}`)
-          .join("\n");
+      : recent.map((j) => `• ${j.id} [${j.type}] ${j.status}`).join("\n");
 
   return {
     ok: true,
@@ -137,6 +134,9 @@ async function formatCompanyStatus(
       `id: ${company.id}`,
       `slug: ${company.slug}`,
       `status: ${company.status}`,
+      knowledge
+        ? `knowledge: ${knowledge.status} (confidence ${knowledge.overallConfidence.toFixed(2)})`
+        : "knowledge: none",
       `workspace: ${company.workspacePath}`,
       `Recent jobs:`,
       jobsLines,
@@ -146,72 +146,34 @@ async function formatCompanyStatus(
 
 async function handleDemo(
   companyName: string,
+  websiteHint: string | undefined,
   ctx: CommandContext,
 ): Promise<CommandResult> {
-  const resolved = await ctx.registry.resolveByName(companyName);
-  const job = await ctx.jobs.create({
-    type: "DEMO",
-    companyId: resolved.company.id,
-    projectId: resolved.project.id,
-    currentStage: "foundation-validate",
-    input: {
-      companyName: resolved.company.displayName,
-      phase: 0,
-    },
-  });
-
-  const log = withJobContext(ctx.logger, {
-    jobId: job.id,
-    companyId: resolved.company.id,
-    projectId: resolved.project.id,
-    command: "demo",
-  });
-
   try {
-    await ctx.jobs.transition(job.id, "RUNNING");
-    await ctx.jobs.setStage(job.id, "resolve-workspace", 30);
-    await ctx.jobs.setStage(job.id, "foundation-lifecycle", 70);
-
-    const succeeded = await ctx.jobs.succeed(job.id, {
-      phase: 0,
-      workspacePath: resolved.workspacePath,
-      workspaceCreated: resolved.workspaceCreated,
-      note: "Phase 0 foundation lifecycle only — discovery and generation are not implemented",
+    const result = await ctx.discovery.discover({
+      companyName,
+      websiteHint,
     });
-
-    if (succeeded.status !== "SUCCEEDED") {
-      throw new AppError(
-        "INVALID_STATE_TRANSITION",
-        "Demo job did not reach SUCCEEDED",
-      );
-    }
-
-    log.info("demo.foundation.succeeded");
-
+    const paths = result.relativePaths
+      ? [
+          "",
+          `Saved: ${result.relativePaths.workspaceKnowledge}`,
+          `Memory: ${result.relativePaths.memoryKnowledge}`,
+        ]
+      : [];
     return {
-      ok: true,
-      jobId: succeeded.id,
-      companyId: resolved.company.id,
-      message: [
-        "Phase 0 foundation check complete.",
-        `company: ${resolved.company.displayName}`,
-        `companyId: ${resolved.company.id}`,
-        `slug: ${resolved.company.slug}`,
-        `workspace: ${resolved.workspacePath}`,
-        `workspaceCreated: ${resolved.workspaceCreated}`,
-        `jobId: ${succeeded.id}`,
-        `jobStatus: ${succeeded.status}`,
-        "",
-        "Discovery and generation are NOT implemented in Phase 0.",
-        "This is not a build/deploy success.",
-      ].join("\n"),
+      ok: result.ok,
+      jobId: result.jobId,
+      companyId: result.companyId,
+      message: [...result.message.split("\n"), ...paths].join("\n"),
     };
   } catch (error) {
-    const record = toErrorRecord(error);
-    await ctx.jobs.fail(job.id, record).catch((failError) => {
-      log.error({ err: failError }, "demo.fail.persist_failed");
-    });
-    log.error({ err: record }, "demo.foundation.failed");
+    if (isAppError(error)) {
+      return {
+        ok: false,
+        message: toUserMessage(error),
+      };
+    }
     throw error;
   }
 }
@@ -230,14 +192,14 @@ async function handleEdit(
     input: {
       companyName: resolved.company.displayName,
       request,
-      phase: 0,
+      phase: 1,
     },
   });
 
   await ctx.jobs.transition(job.id, "RUNNING");
   const failed = await ctx.jobs.fail(job.id, {
     code: "NOT_IMPLEMENTED",
-    message: "Scoped edits are not implemented in Phase 0",
+    message: "Scoped edits are not implemented in Phase 1",
   });
 
   return {
@@ -279,12 +241,12 @@ async function handleOps(
     companyId: resolved.company.id,
     projectId: resolved.project.id,
     currentStage: "not-implemented",
-    input: { action, companyName: resolved.company.displayName, phase: 0 },
+    input: { action, companyName: resolved.company.displayName, phase: 1 },
   });
   await ctx.jobs.transition(job.id, "RUNNING");
   const failed = await ctx.jobs.fail(job.id, {
     code: "NOT_IMPLEMENTED",
-    message: `Ops action "${action}" is not implemented in Phase 0`,
+    message: `Ops action "${action}" is not implemented in Phase 1`,
   });
 
   return {
@@ -292,7 +254,7 @@ async function handleOps(
     jobId: failed.id,
     companyId: resolved.company.id,
     message: [
-      `Ops action "${action}" is not implemented in Phase 0.`,
+      `Ops action "${action}" is not implemented in Phase 1.`,
       `jobId: ${failed.id}`,
       `error: NOT_IMPLEMENTED`,
       "No shell commands were executed.",

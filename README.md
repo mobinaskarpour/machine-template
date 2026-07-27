@@ -1,67 +1,40 @@
 # THE MACHINE — Autonomous AI Company OS Builder
 
-Phase 0 foundation for an autonomous company OS control plane.
+Phase 1: company discovery and structured CompanyKnowledge.
 
-**This phase does not generate companies, dashboards, workflows, agents, or deployments.**
+## What works now
 
-## What Phase 0 provides
+- Telegram bot commands (`/start`, `/help`, `/status`, `/demo`, `/edit`, `/ops`)
+- `/demo <company>` discovery job pipeline
+- `/demo <company> | https://site` explicit website discovery
+- Safe public web fetch (SSRF protections)
+- Deterministic extraction + knowledge synthesis
+- Dual persistence: workspace + central memory
+- CLI: `npm run discover -- "Company" [url]`
 
-- Telegram bot entry (`/start`, `/help`, `/status`, `/demo`, `/edit`, `/ops`)
-- Command parsing separated from execution
-- Persistent companies, projects, and jobs (filesystem JSON)
-- Isolated company workspaces under `data/projects/<slug>/`
-- Job lifecycle with validated state transitions
-- Safe command runner (absolute `/bin/bash` only when needed)
-- Structured logging with secret redaction
-- Interfaces for future pipeline modules
+## Not implemented yet
 
-## Preserved demo template
-
-The previous Next.js demo UI lives in [`templates/machine-demo/`](templates/machine-demo/) and is **not** part of the Phase 0 runtime.
+Application generation, dashboards/workflows/agents, deploy, scoped edits, ops restart/SSL.
 
 ## Setup
 
 ```bash
-cd ~/machine-template
 cp .env.example .env
-# Put a *new rotated* TELEGRAM_BOT_TOKEN in .env (never commit it)
+# set TELEGRAM_BOT_TOKEN (rotated) and optional TAVILY_API_KEY
 npm install
 npm run typecheck
 npm test
-```
-
-## Run the bot
-
-```bash
 npm run bot
-# or
-npm run dev
 ```
-
-Required env (see `.env.example`):
-
-| Variable | Purpose |
-|----------|---------|
-| `TELEGRAM_BOT_TOKEN` | BotFather token (rotated; never commit) |
-| `DATA_ROOT` | Registry/job/log root (default `./data`) |
-| `PROJECTS_ROOT` | Company workspaces (default `./data/projects`) |
-| `LOG_LEVEL` | Pino level |
-| `NODE_ENV` | `development` / `test` / `production` |
-
-## Security notes
-
-- Do **not** paste tokens into chat, commits, or docs.
-- If a token was exposed, **rotate it** in BotFather / GitHub before use.
-- `.env` is gitignored. `.env.example` contains empty placeholders only.
-- Telegram input never becomes a filesystem path directly; slugs are generated centrally.
 
 ## Docs
 
-- [Architecture](docs/ARCHITECTURE.md)
-- [Phases](docs/PHASES.md)
-- [Security](docs/SECURITY.md)
-- [Data layout](docs/DATA-LAYOUT.md)
+- [ARCHITECTURE](docs/ARCHITECTURE.md)
+- [PHASES](docs/PHASES.md)
+- [COMPANY-DISCOVERY](docs/COMPANY-DISCOVERY.md)
+- [COMPANY-KNOWLEDGE](docs/COMPANY-KNOWLEDGE.md)
+- [DISCOVERY-PROVIDERS](docs/DISCOVERY-PROVIDERS.md)
+- [SECURITY](docs/SECURITY.md)
+- [DATA-LAYOUT](docs/DATA-LAYOUT.md)
 
-## Next phase
-
-**Phase 1 — Company Discovery and CompanyKnowledge** (not implemented here).
+Previous Next.js demo template is preserved under `templates/machine-demo/`.

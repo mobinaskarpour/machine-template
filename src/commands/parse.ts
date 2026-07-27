@@ -1,10 +1,11 @@
 import { AppError } from "../shared/errors.js";
+import { assertSafePublicUrlSync } from "../security/safe-url.js";
 
 export type ParsedCommand =
   | { kind: "start" }
   | { kind: "help" }
   | { kind: "status"; target: string; targetType: "job" | "company" | "unknown" }
-  | { kind: "demo"; companyName: string }
+  | { kind: "demo"; companyName: string; websiteHint?: string }
   | { kind: "edit"; companyName: string; request: string }
   | { kind: "ops"; companyName: string; action: OpsAction }
   | { kind: "unknown"; raw: string };
@@ -21,7 +22,6 @@ function normalizeWhitespace(text: string): string {
 
 function stripCommand(text: string, command: string): string | null {
   const trimmed = text.trim();
-  // Support /cmd@BotName
   const re = new RegExp(`^/${command}(?:@\\w+)?(?:\\s+|$)`, "i");
   if (!re.test(trimmed)) return null;
   return trimmed.replace(re, "").trim();
@@ -47,6 +47,33 @@ function splitCompanyRequest(rest: string): { companyName: string; request: stri
   return { companyName, request };
 }
 
+function parseDemoRest(rest: string): { companyName: string; websiteHint?: string } {
+  const normalized = normalizeWhitespace(rest);
+  if (!normalized) {
+    throw new AppError("VALIDATION_ERROR", "Usage: /demo <company-name>");
+  }
+  const pipeIdx = normalized.indexOf("|");
+  if (pipeIdx < 0) {
+    return { companyName: normalized };
+  }
+  if (pipeIdx === 0) {
+    throw new AppError("VALIDATION_ERROR", "Company name cannot be empty");
+  }
+  const companyName = normalized.slice(0, pipeIdx).trim();
+  const websiteRaw = normalized.slice(pipeIdx + 1).trim();
+  if (!companyName) {
+    throw new AppError("VALIDATION_ERROR", "Company name cannot be empty");
+  }
+  if (!websiteRaw) {
+    throw new AppError(
+      "VALIDATION_ERROR",
+      "Usage: /demo <company-name> | https://example.com",
+    );
+  }
+  const validated = assertSafePublicUrlSync(websiteRaw);
+  return { companyName, websiteHint: validated.href };
+}
+
 export function detectStatusTargetType(
   target: string,
 ): "job" | "company" | "unknown" {
@@ -61,9 +88,6 @@ export function parseCommand(text: string): ParsedCommand {
     throw new AppError("VALIDATION_ERROR", "Empty command");
   }
 
-  if (stripCommand(raw, "start") !== null && stripCommand(raw, "start") === "") {
-    return { kind: "start" };
-  }
   if (/^\/start(?:@\w+)?$/i.test(raw)) {
     return { kind: "start" };
   }
@@ -89,11 +113,12 @@ export function parseCommand(text: string): ParsedCommand {
 
   const demoRest = stripCommand(raw, "demo");
   if (demoRest !== null) {
-    const companyName = normalizeWhitespace(demoRest);
-    if (!companyName) {
-      throw new AppError("VALIDATION_ERROR", "Usage: /demo <company-name>");
-    }
-    return { kind: "demo", companyName };
+    const parsed = parseDemoRest(demoRest);
+    return {
+      kind: "demo",
+      companyName: parsed.companyName,
+      websiteHint: parsed.websiteHint,
+    };
   }
 
   const editRest = stripCommand(raw, "edit");
