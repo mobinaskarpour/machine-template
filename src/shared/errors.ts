@@ -40,7 +40,19 @@ export type ErrorCode =
   | "BLUEPRINT_VALIDATION_FAILED"
   | "BLUEPRINT_PERSISTENCE_FAILED"
   | "BLUEPRINT_MIRROR_MISMATCH"
-  | "BLUEPRINT_NOT_READY";
+  | "BLUEPRINT_NOT_READY"
+  | "GENERATION_SOURCE_MISMATCH"
+  | "GENERATION_PLAN_INVALID"
+  | "GENERATION_POLICY_VIOLATION"
+  | "GENERATION_VALIDATION_FAILED"
+  | "GENERATION_INSTALL_FAILED"
+  | "GENERATION_TYPECHECK_FAILED"
+  | "GENERATION_TEST_FAILED"
+  | "GENERATION_BUILD_FAILED"
+  | "GENERATION_SECURITY_FAILED"
+  | "GENERATION_PROMOTION_FAILED"
+  | "GENERATION_NOT_READY"
+  | "GENERATION_COVERAGE_FAILED";
 
 export class AppError extends Error {
   readonly code: ErrorCode;
@@ -99,6 +111,19 @@ const DISCOVERY_USER_MESSAGES: Partial<Record<ErrorCode, string>> = {
   BLUEPRINT_NOT_READY: "Blueprint is not ready for code generation.",
   BLUEPRINT_MIRROR_MISMATCH: "Blueprint mirror copies did not match after save.",
   BLUEPRINT_PERSISTENCE_FAILED: "Failed to save company OS blueprint.",
+  GENERATION_SOURCE_MISMATCH:
+    "Planning artifacts are out of sync. Re-run blueprint planning before generation.",
+  GENERATION_PLAN_INVALID: "Generation plan is invalid.",
+  GENERATION_POLICY_VIOLATION: "Generated application violated source or dependency policy.",
+  GENERATION_VALIDATION_FAILED: "Generated application failed validation.",
+  GENERATION_INSTALL_FAILED: "Installing generated app dependencies failed.",
+  GENERATION_TYPECHECK_FAILED: "Generated application typecheck failed.",
+  GENERATION_TEST_FAILED: "Generated application tests failed.",
+  GENERATION_BUILD_FAILED: "Generated application production build failed.",
+  GENERATION_SECURITY_FAILED: "Generated application failed the security scan.",
+  GENERATION_PROMOTION_FAILED: "Promoting the generated release failed.",
+  GENERATION_NOT_READY: "Company artifacts are not ready for code generation.",
+  GENERATION_COVERAGE_FAILED: "Generated application is missing required Blueprint coverage.",
 };
 
 export function toUserMessage(error: unknown): string {

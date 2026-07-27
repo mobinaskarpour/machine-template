@@ -25,6 +25,7 @@ import { FsMasterPromptRepository } from "../prompts/master-prompt-repository.js
 import { CompanyPlanningService } from "../prompts/company-planning-service.js";
 import { FsCompanyOSBlueprintRepository } from "../blueprints/company-os-blueprint-repository.js";
 import { CompanyBlueprintPlanningService } from "../blueprints/company-blueprint-planning-service.js";
+import { ApplicationGenerationService } from "../generation/application-generation-service.js";
 import { mkdir } from "node:fs/promises";
 
 export type AppServices = {
@@ -42,6 +43,7 @@ export type AppServices = {
   industry: IndustryEngine;
   planning: CompanyPlanningService;
   blueprint: CompanyBlueprintPlanningService;
+  generation: ApplicationGenerationService;
   commandContext: CommandContext;
 };
 
@@ -52,6 +54,7 @@ export async function createAppServices(
     searchProvider?: SearchProvider;
     fetcher?: WebsiteFetcher;
     synthesis?: KnowledgeSynthesisProvider;
+    generation?: ApplicationGenerationService;
   },
 ): Promise<AppServices> {
   await mkdir(config.dataRoot, { recursive: true });
@@ -136,6 +139,20 @@ export async function createAppServices(
     jobs: jobManager,
     logger,
   });
+  const generation =
+    overrides?.generation ??
+    new ApplicationGenerationService({
+      cwd: process.cwd(),
+      projectsRoot: config.projectsRoot,
+      registry,
+      knowledge,
+      specifications,
+      prompts,
+      blueprints,
+      jobs: jobManager,
+      runner,
+      logger,
+    });
 
   const commandContext: CommandContext = {
     registry,
@@ -147,6 +164,7 @@ export async function createAppServices(
     knowledge,
     planning,
     blueprint,
+    generation,
   };
 
   return {
@@ -164,6 +182,7 @@ export async function createAppServices(
     industry,
     planning,
     blueprint,
+    generation,
     commandContext,
   };
 }

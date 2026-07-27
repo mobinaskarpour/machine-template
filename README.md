@@ -1,19 +1,25 @@
 # THE MACHINE — Autonomous AI Company OS Builder
 
-Phase 3: Company Discovery → Planning → **Company OS Blueprint** (no application code generation).
+Phase 4: Company Discovery → Planning → Blueprint → **Application code generation** (build-verified release, no deploy).
+
+Phase 4 generates and build-verifies an application release. It does not deploy or expose that application publicly.
 
 ## What works now
 
-- `/demo` pipeline through blueprint completion
-- Industry Engine + MasterBuildSpecification + Master Prompt
-- Deterministic Company OS Blueprint (RBAC, navigation, dashboards, workflows, agents, data model, mock-data plan, implementation plan)
-- CLIs: `discover`, `plan`, `blueprint`, `migrate:slug --dry-run`
+- `/demo` pipeline through blueprint **and** application generation (when the blueprint is ready)
+- Industry Engine + MasterBuildSpecification + Master Prompt + Company OS Blueprint
+- Deterministic application generation from `templates/generated-company-os-v1` (Next.js 14.2 / Node 18)
+- Generation plan, mock data, validation, security scan, and release promotion
+- CLIs: `discover`, `plan`, `blueprint`, `generate`, `migrate:slug --dry-run`
+
+## Templates
+
+- `templates/machine-demo` — preserved legacy demo shell
+- `templates/generated-company-os-v1` — Phase 4 Company OS application shell (Next 14.2 / Node 18)
 
 ## Not implemented yet
 
-Application source generation, builds, deployments, executable agents, `/edit` execution, ops restart/SSL.
-
-Phase 3 generates an implementation-ready Company OS Blueprint. It does **not** generate source code, build an application, or deploy anything.
+Public deployment, SSL, ops restart, executable agents, `/edit` execution, and exposing generated apps on a public URL.
 
 ## Setup
 
@@ -31,6 +37,7 @@ npm run bot
 npm run discover -- "زر ماکارون" "https://www.zarmacaron.com/"
 npm run plan -- "زر ماکارون"
 npm run blueprint -- "زر ماکارون"
+npm run generate -- "زر ماکارون"
 npm run migrate:slug -- --dry-run "زر ماکارون"
 ```
 
@@ -38,12 +45,13 @@ npm run migrate:slug -- --dry-run "زر ماکارون"
 
 - [ARCHITECTURE](docs/ARCHITECTURE.md)
 - [PHASES](docs/PHASES.md)
+- [APPLICATION-CODE-GENERATION](docs/APPLICATION-CODE-GENERATION.md)
+- [GENERATION-PROVIDERS](docs/GENERATION-PROVIDERS.md)
+- [GENERATION-PLAN](docs/GENERATION-PLAN.md)
+- [GENERATED-RELEASES](docs/GENERATED-RELEASES.md)
+- [GENERATED-APP-VALIDATION](docs/GENERATED-APP-VALIDATION.md)
+- [MOCK-DATA-ENGINE](docs/MOCK-DATA-ENGINE.md)
+- [GENERATED-APP-SECURITY](docs/GENERATED-APP-SECURITY.md)
 - [COMPANY-OS-BLUEPRINT](docs/COMPANY-OS-BLUEPRINT.md)
-- [BLUEPRINT-VALIDATION](docs/BLUEPRINT-VALIDATION.md)
-- [BLUEPRINT-RBAC](docs/BLUEPRINT-RBAC.md)
-- [BLUEPRINT-WORKFLOWS](docs/BLUEPRINT-WORKFLOWS.md)
-- [BLUEPRINT-DATA-MODEL](docs/BLUEPRINT-DATA-MODEL.md)
-- [BLUEPRINT-MOCK-DATA-PLAN](docs/BLUEPRINT-MOCK-DATA-PLAN.md)
-- [INDUSTRY-ENGINE](docs/INDUSTRY-ENGINE.md)
 - [SECURITY](docs/SECURITY.md)
 - [DATA-LAYOUT](docs/DATA-LAYOUT.md)

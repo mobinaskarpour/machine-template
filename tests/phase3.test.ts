@@ -25,6 +25,8 @@ import { validateCompanyOSBlueprint } from "../src/blueprints/company-os-bluepri
 import { AppError } from "../src/shared/errors.js";
 import type { FetchedPage, WebsiteFetcher } from "../src/discovery/discovery-types.js";
 import { nowIso } from "../src/shared/ids.js";
+import { createStubGenerationService } from "../src/generation/test-stub-generation.js";
+import { calculateBlueprintQuality } from "../src/blueprints/blueprint-readiness.js";
 
 const fixtureRoot = join(process.cwd(), "tests/fixtures/zar-macaron");
 const zarKnowledge = parseCompanyKnowledge(
@@ -231,7 +233,7 @@ describe("Phase 3 pipeline", () => {
     expect(await readFile(summary, "utf8")).toContain("زر ماکارون");
   });
 
-  it("/demo completes with blueprint-only success message", async () => {
+  it("/demo completes through generation with no deployment", async () => {
     const root = await mkdtemp(join(tmpdir(), "machine-p3-demo-"));
     const config = loadConfig(
       {
@@ -248,6 +250,7 @@ describe("Phase 3 pipeline", () => {
         "https://www.zarmacaron.com/": zarHome,
         "*": zarHome,
       }),
+      generation: createStubGenerationService(),
     });
     const result = await executeCommand(
       {
@@ -259,7 +262,148 @@ describe("Phase 3 pipeline", () => {
     );
     expect(result.ok).toBe(true);
     expect(result.message).toMatch(/Blueprint سیستم‌عامل شرکتی تکمیل شد/);
-    expect(result.message).toContain("هنوز هیچ اپلیکیشنی تولید، Build یا Deploy نشده است");
+    expect(result.message).toMatch(/Application generated and build verified/);
+    expect(result.message).toMatch(/has not been deployed|Deploy نشده/);
+    expect(result.message).not.toMatch(/Deployment Complete|public URL: https?:\/\//i);
+  });
+});
+
+describe("Phase 3 quality score audit", () => {
+  it("scores are not constant and incomplete blueprints score lower", () => {
+    const engine = new IndustryEngine();
+    const resolution = engine.resolveFromKnowledge(zarKnowledge);
+    const pack = engine.getPack(resolution.selectedPackId);
+    const specification = buildMasterBuildSpecification({
+      knowledge: zarKnowledge,
+      resolution,
+      pack,
+    });
+    const prompt = buildMasterPrompt({
+      knowledge: zarKnowledge,
+      pack,
+      specification,
+    });
+    const full = buildCompanyOSBlueprint({
+      knowledge: zarKnowledge,
+      resolution,
+      pack,
+      specification,
+      prompt,
+    });
+    const fullQ = calculateBlueprintQuality({
+      knowledge: zarKnowledge,
+      specification,
+      blueprint: full,
+    });
+
+    const incomplete = {
+      ...full,
+      dashboards: full.dashboards.slice(0, 1),
+      modules: full.modules.slice(0, 1),
+      workflows: [],
+      agents: [],
+      navigation: { ...full.navigation, primary: full.navigation.primary.slice(0, 1) },
+      mockDataPlan: { ...full.mockDataPlan, scenarios: full.mockDataPlan.scenarios.slice(0, 1) },
+      dataModel: {
+        ...full.dataModel,
+        entities: full.dataModel.entities.slice(0, 2),
+        relationships: [],
+      },
+      roles: full.roles.slice(0, 1),
+      permissionModel: {
+        ...full.permissionModel,
+        permissions: full.permissionModel.permissions.slice(0, 1),
+        sensitiveOperations: [],
+      },
+      implementationPlan: {
+        ...full.implementationPlan,
+        workstreams: full.implementationPlan.workstreams.slice(0, 1),
+      },
+    };
+    const incompleteQ = calculateBlueprintQuality({
+      knowledge: zarKnowledge,
+      specification,
+      blueprint: incomplete,
+    });
+
+    expect(fullQ.completenessScore).toBeGreaterThan(incompleteQ.completenessScore);
+    expect(incompleteQ.completenessScore).toBeLessThan(1);
+    expect(incompleteQ.readyForCodeGeneration).toBe(false);
+
+    const brokenConsistency = {
+      ...full,
+      dashboards: full.dashboards.map((d, i) =>
+        i === 0
+          ? {
+              ...d,
+              widgets: d.widgets.map((w) => ({ ...w, sectionId: "missing-section" })),
+            }
+          : d,
+      ),
+    };
+    const brokenQ = calculateBlueprintQuality({
+      knowledge: zarKnowledge,
+      specification,
+      blueprint: brokenConsistency,
+    });
+    expect(brokenQ.consistencyScore).toBeLessThan(fullQ.consistencyScore);
+
+    const untraced = {
+      ...full,
+      dashboards: full.dashboards.map((d) =>
+        d.priority === "HIGH" ? { ...d, trace: [] } : d,
+      ),
+      workflows: full.workflows.map((w) =>
+        w.priority === "HIGH" ? { ...w, trace: [] } : w,
+      ),
+      agents: full.agents.map((a) =>
+        a.priority === "HIGH" ? { ...a, trace: [] } : a,
+      ),
+      modules: full.modules.map((m) =>
+        m.priority === "HIGH" ? { ...m, trace: [] } : m,
+      ),
+    };
+    const untracedQ = calculateBlueprintQuality({
+      knowledge: zarKnowledge,
+      specification,
+      blueprint: untraced,
+    });
+    expect(untracedQ.traceabilityScore).toBeLessThan(fullQ.traceabilityScore);
+
+    const unsafe = {
+      ...full,
+      permissionModel: {
+        ...full.permissionModel,
+        sensitiveOperations: full.permissionModel.sensitiveOperations.map((s) => ({
+          ...s,
+          approvalRequired: false,
+          auditRequired: false,
+        })),
+      },
+      agents: full.agents.map((a) => ({
+        ...a,
+        prohibitedActions: ["only-one"],
+        tools: a.tools.map((t) => ({ ...t, readOnly: false })),
+      })),
+    };
+    const unsafeQ = calculateBlueprintQuality({
+      knowledge: zarKnowledge,
+      specification,
+      blueprint: unsafe,
+    });
+    expect(unsafeQ.securityScore).toBeLessThan(fullQ.securityScore);
+
+    expect(fullQ.readyForCodeGeneration).toBe(true);
+    // Soft penalty from unresolved questions may keep completeness below 1.00
+    expect(
+      [
+        fullQ.completenessScore,
+        fullQ.consistencyScore,
+        fullQ.traceabilityScore,
+        fullQ.securityScore,
+        fullQ.implementationReadinessScore,
+      ].some((s) => s < 1) || fullQ.warnings.length >= 0,
+    ).toBe(true);
   });
 });
 

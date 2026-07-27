@@ -19,6 +19,7 @@ import { DeterministicKnowledgeSynthesisProvider } from "../src/discovery/provid
 import type { FetchedPage, WebsiteFetcher } from "../src/discovery/discovery-types.js";
 import { nowIso } from "../src/shared/ids.js";
 import { AppError } from "../src/shared/errors.js";
+import { createStubGenerationService } from "../src/generation/test-stub-generation.js";
 
 const fixtureRoot = join(process.cwd(), "tests/fixtures/zar-macaron");
 const zarKnowledge = parseCompanyKnowledge(
@@ -398,6 +399,7 @@ describe("Phase 2 pipeline persistence", () => {
         "https://www.zarmacaron.com/about": zarAbout,
         "*": zarHome,
       }),
+      generation: createStubGenerationService(),
     });
     const result = await executeCommand(
       {
@@ -411,7 +413,9 @@ describe("Phase 2 pipeline persistence", () => {
     expect(result.message).toMatch(
       /Blueprint سیستم‌عامل شرکتی تکمیل شد|Company OS blueprint completed/,
     );
-    expect(result.message).not.toContain("Build Successful");
+    expect(result.message).toMatch(/Application generated and build verified/);
+    expect(result.message).toMatch(/has not been deployed/i);
+    expect(result.message).not.toMatch(/Deployment Complete/i);
   });
 });
 

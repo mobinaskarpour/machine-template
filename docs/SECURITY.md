@@ -1,4 +1,4 @@
-# Security — Phase 0
+# Security — Phase 0–4
 
 ## Secrets
 
@@ -19,6 +19,7 @@ If a secret was pasted into chat or logs: **rotate it immediately** and do not r
 - All workspace paths resolve under `PROJECTS_ROOT`.
 - Slugs are generated centrally; Telegram text is not used as a path.
 - `resolveUnderRoot` rejects `..` traversal and escapes.
+- Generation staging / release IDs reject `..` and path separators.
 
 ## Command execution
 
@@ -28,6 +29,7 @@ If a secret was pasted into chat or logs: **rotate it immediately** and do not r
 - Child env is an explicit allowlist (secrets excluded).
 - Timeouts kill the child process.
 - Telegram ops text never reaches the shell in Phase 0.
+- Generated-app install / typecheck / test / build use the same SafeCommandRunner with an npm allowlist.
 
 ## Logging
 
@@ -38,7 +40,6 @@ Do not log full `process.env`.
 ## Data
 
 Do not store secrets under `data/`, `.factory/` workspace metadata, or job outputs.
-
 
 ## Phase 1 additions
 
@@ -57,6 +58,17 @@ Do not store secrets under `data/`, `.factory/` workspace metadata, or job outpu
 
 - Blueprint never contains raw research HTML or live secrets
 - Agents remain non-executing planning records
-- No source generation, build, or deploy from blueprint
 - Slug migration never runs automatically at startup
 - Runtime blueprints stay gitignored
+
+## Phase 4 additions
+
+- Template copy rejects symlinks and excludes `.env*`, `node_modules`, `.next`
+- Generated source path policy + dependency allowlist / forbidden packages
+- Mock data uses synthetic names (no real personal identities from research)
+- Security scan blocks high-severity patterns before promotion
+- Promotion never updates `current-generation.json` until the release copy succeeds
+- Failed builds do not promote
+- Phase 4 generates and build-verifies an application release. It does not deploy or expose that application publicly.
+
+See also [GENERATED-APP-SECURITY](./GENERATED-APP-SECURITY.md).

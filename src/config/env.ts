@@ -38,6 +38,7 @@ const ConfigSchema = z.object({
 
 export type AppConfig = {
   telegramBotToken: string;
+  cwd: string;
   dataRoot: string;
   projectsRoot: string;
   companiesDir: string;
@@ -138,6 +139,7 @@ export function loadConfig(
 
   return {
     telegramBotToken: parsed.data.TELEGRAM_BOT_TOKEN,
+    cwd,
     dataRoot,
     projectsRoot,
     companiesDir: resolve(dataRoot, "companies"),

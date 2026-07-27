@@ -29,6 +29,7 @@ import type {
   WebsiteFetcher,
 } from "../src/discovery/discovery-types.js";
 import { DeterministicKnowledgeSynthesisProvider } from "../src/discovery/providers/deterministic-synthesis.js";
+import { createStubGenerationService } from "../src/generation/test-stub-generation.js";
 import { rankWebsiteCandidates, selectTopWebsite } from "../src/discovery/source-ranking.js";
 import { stripHtmlToText } from "../src/security/untrusted-content.js";
 import { readFileSync } from "node:fs";
@@ -605,6 +606,7 @@ describe("telegram demo command", () => {
           "*": acmeHtml,
         }),
         synthesis: new DeterministicKnowledgeSynthesisProvider(),
+        generation: createStubGenerationService(),
       },
     );
     const result = await executeCommand(
@@ -619,7 +621,8 @@ describe("telegram demo command", () => {
     expect(result.message).toMatch(
       /Blueprint سیستم‌عامل شرکتی تکمیل شد|Company OS blueprint completed/,
     );
-    expect(result.message).not.toContain("Build Successful");
+    expect(result.message).toMatch(/Application generated and build verified|not ready for code generation|آماده برای تولید کد: خیر/i);
+    expect(result.message).not.toMatch(/Deployment Complete/i);
   });
 });
 

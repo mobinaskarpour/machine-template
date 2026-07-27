@@ -248,7 +248,7 @@ export function formatBlueprintSummaryMessage(
       "موارد نیازمند تأیید:",
       ...(blockers.length ? blockers.map((b) => `- ${b}`) : ["- مورد مسدودکننده ثبت نشد"]),
       "",
-      "هنوز هیچ اپلیکیشنی تولید، Build یا Deploy نشده است.",
+      "این مرحله فقط Blueprint است؛ تولید اپلیکیشن در مرحله جداگانه (/demo یا generate) انجام می‌شود.",
     ].join("\n");
   }
 
@@ -269,6 +269,6 @@ export function formatBlueprintSummaryMessage(
     "Items requiring confirmation:",
     ...(blockers.length ? blockers.map((b) => `- ${b}`) : ["- No blocking items"]),
     "",
-    "No application has been generated, built, or deployed.",
+    "This Blueprint step does not generate application source. Generation runs separately via /demo or npm run generate when ready.",
   ].join("\n");
 }

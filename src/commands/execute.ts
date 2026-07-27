@@ -6,6 +6,7 @@ import type { CompanyDiscoveryService } from "../discovery/company-discovery-ser
 import type { CompanyKnowledgeService } from "../knowledge/company-knowledge-service.js";
 import type { CompanyPlanningService } from "../prompts/company-planning-service.js";
 import type { CompanyBlueprintPlanningService } from "../blueprints/company-blueprint-planning-service.js";
+import type { ApplicationGenerationService } from "../generation/application-generation-service.js";
 import { AppError, isAppError, toUserMessage } from "../shared/errors.js";
 import type { ParsedCommand, OpsAction } from "./parse.js";
 import type { Logger } from "pino";
@@ -27,28 +28,29 @@ export type CommandContext = {
   knowledge: CompanyKnowledgeService;
   planning: CompanyPlanningService;
   blueprint: CompanyBlueprintPlanningService;
+  generation: ApplicationGenerationService;
 };
 
 const INTRO = `THE MACHINE — Autonomous AI Company OS Builder
 
-Phase 3 is online: discovery, planning, and Company OS Blueprint generation.
+Phase 4 is online: discovery, planning, blueprint, and application code generation.
 
-I can discover companies, build MasterBuildSpecification and Master Prompt, and produce an implementation-ready blueprint.
-Application source generation and deployment are not implemented yet.`;
+I can discover companies, build blueprints, and generate a build-verified Company OS demo application.
+Deployment is not implemented — generated apps are not published publicly.`;
 
-const HELP = `Available commands (Phase 3):
+const HELP = `Available commands (Phase 4):
 
 /start — introduction
 /help — this message
 /status <job-id|company-name> — persistent status
-/demo <company-name> — discover → plan → blueprint (when knowledge is READY)
-/demo <company-name> | https://example.com — explicit website, then plan + blueprint
+/demo <company-name> — discover → plan → blueprint → generate (when ready)
+/demo <company-name> | https://example.com — explicit website, then full pipeline
 /edit <company-name>: <request> — placeholder (NOT_IMPLEMENTED)
 /ops <company-name>: <action> — status | logs | restart | ssl
 
 Not implemented yet:
-• application source generation
-• deployment, restarts, SSL`;
+• deployment, restarts, SSL
+• public URL exposure`;
 
 export async function executeCommand(
   parsed: ParsedCommand,
@@ -194,11 +196,36 @@ async function handleDemo(
       ).project.id,
     });
 
-    return {
-      ok: blueprint.ok,
-      jobId: blueprint.jobId,
+    if (!blueprint.blueprint.quality.readyForCodeGeneration) {
+      return {
+        ok: blueprint.ok,
+        jobId: blueprint.jobId,
+        companyId: blueprint.companyId,
+        message: [
+          blueprint.message,
+          "",
+          "Application generation skipped — Blueprint is not ready for code generation.",
+          "The application has not been deployed.",
+        ].join("\n"),
+      };
+    }
+
+    const generation = await ctx.generation.generateWithArtifacts({
+      knowledgeHash: planning.knowledge.contentHash ?? "",
+      specificationHash: planning.specification.contentHash ?? "",
+      masterPromptHash: planning.prompt.contentHash ?? "",
+      blueprint: blueprint.blueprint,
       companyId: blueprint.companyId,
-      message: blueprint.message,
+      projectId: (
+        await ctx.registry.resolveByName(planning.knowledge.displayName)
+      ).project.id,
+    });
+
+    return {
+      ok: generation.ok,
+      jobId: generation.jobId,
+      companyId: generation.companyId,
+      message: [blueprint.message, "", generation.message].join("\n"),
     };
   } catch (error) {
     if (isAppError(error)) {
