@@ -1,40 +1,31 @@
 {
-  "name": "machine",
+  "name": "the-machine",
   "version": "0.1.0",
   "private": true,
+  "description": "THE MACHINE — Autonomous AI Company OS Builder (Phase 0 foundation)",
+  "type": "module",
+  "engines": {
+    "node": ">=18.18.0"
+  },
   "scripts": {
-    "dev": "next dev -p 3456",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsx watch src/app/main.ts",
+    "start": "node dist/app/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "validate-demo": "tsx scripts/validate-demo.ts",
-    "generate-demo": "tsx scripts/generate-demo.ts",
-    "replace-branding": "tsx scripts/replace-branding.ts",
-    "generate-mock-data": "tsx scripts/generate-mock-data.ts",
-    "generate-workflows": "tsx scripts/generate-workflows.ts",
-    "generate-dashboards": "tsx scripts/generate-dashboards.ts"
+    "test:watch": "vitest",
+    "bot": "tsx src/app/main.ts"
   },
   "dependencies": {
-    "framer-motion": "^12.0.0",
-    "lucide-react": "^0.500.0",
-    "next": "15.1.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "zustand": "^5.0.14"
+    "dotenv": "^16.6.1",
+    "pino": "^9.7.0",
+    "telegraf": "^4.16.3",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.6",
-    "@tailwindcss/postcss": "^4.3.3",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "15.1.0",
-    "tailwindcss": "^4.3.3",
-    "tsx": "^4.23.1",
-    "typescript": "^5",
-    "vitest": "^3.2.7"
+    "@types/node": "^20.19.9",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   }
 }
