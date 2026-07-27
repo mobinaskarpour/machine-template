@@ -337,7 +337,23 @@ export class DiscoveryOrchestrator {
 
       await setStage("DISCOVERY_COMPLETE");
       const companyStatus = saved.status === "READY" ? "READY" : "CREATED";
-      await this.deps.companies.update(resolved.company.id, { status: companyStatus });
+      const mergedAliases = [
+        ...new Set(
+          [
+            ...resolved.company.aliases,
+            ...saved.identity.tradingNames,
+            companyName,
+            saved.displayName,
+          ]
+            .map((a) => a.trim())
+            .filter(Boolean)
+            .filter((a) => a !== resolved.company.displayName),
+        ),
+      ];
+      await this.deps.companies.update(resolved.company.id, {
+        status: companyStatus,
+        aliases: mergedAliases,
+      });
 
       const succeeded = await this.deps.jobs.succeed(job.id, {
         phase: 1,

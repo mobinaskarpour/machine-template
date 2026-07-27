@@ -1,0 +1,231 @@
+{
+  "schemaVersion": "1.0",
+  "companyId": "co_fixture_zar_macaron",
+  "companySlug": "zar-macaron",
+  "displayName": "زر ماکارون",
+  "status": "READY",
+  "identity": {
+    "legalName": "زر ماکارون",
+    "tradingNames": ["Zar Macaron", "ZarMacaron", "زرماکارون"],
+    "description": "Iranian food manufacturer producing pasta, spaghetti, lasagna, and packaged consumer food products with industrial production, quality control, inventory, and distribution operations.",
+    "country": "Iran",
+    "officialWebsite": "https://www.zarmacaron.com/",
+    "contact": {
+      "address": "Iran"
+    }
+  },
+  "industry": {
+    "primary": "Food manufacturing",
+    "secondary": ["Pasta manufacturing", "Consumer packaged goods", "Industrial production"],
+    "confidence": 0.9,
+    "evidenceSourceIds": ["src_home", "src_products"]
+  },
+  "products": [
+    {
+      "id": "prod_spaghetti",
+      "name": "Spaghetti",
+      "category": "Pasta",
+      "description": "Packaged spaghetti pasta",
+      "confidence": 0.88,
+      "evidenceSourceIds": ["src_products"]
+    },
+    {
+      "id": "prod_shaped",
+      "name": "Shaped pasta",
+      "category": "Pasta",
+      "confidence": 0.85,
+      "evidenceSourceIds": ["src_products"]
+    },
+    {
+      "id": "prod_lasagna",
+      "name": "Lasagna",
+      "category": "Pasta",
+      "confidence": 0.82,
+      "evidenceSourceIds": ["src_products"]
+    },
+    {
+      "id": "prod_fettuccine",
+      "name": "Fettuccine",
+      "category": "Pasta",
+      "confidence": 0.8,
+      "evidenceSourceIds": ["src_products"]
+    }
+  ],
+  "departments": [
+    {
+      "id": "dept_production",
+      "name": "Production",
+      "inferred": true,
+      "confidence": 0.55,
+      "evidenceSourceIds": ["src_home"]
+    },
+    {
+      "id": "dept_quality",
+      "name": "Quality",
+      "inferred": true,
+      "confidence": 0.5,
+      "evidenceSourceIds": ["src_about"]
+    },
+    {
+      "id": "dept_sales",
+      "name": "Sales",
+      "inferred": true,
+      "confidence": 0.45,
+      "evidenceSourceIds": ["src_home"]
+    },
+    {
+      "id": "dept_warehouse",
+      "name": "Warehouse",
+      "inferred": true,
+      "confidence": 0.45,
+      "evidenceSourceIds": ["src_home"]
+    }
+  ],
+  "roles": [],
+  "businessModel": {
+    "summary": "B2B and consumer packaged food products manufactured and distributed in the Iranian market",
+    "type": "B2B2C",
+    "confidence": 0.7,
+    "evidenceSourceIds": ["src_home"]
+  },
+  "customers": [],
+  "suppliers": [],
+  "painPoints": [
+    {
+      "id": "pain_throughput",
+      "title": "Production throughput visibility",
+      "description": "Need clearer production plan attainment and line utilization",
+      "inferred": true,
+      "confidence": 0.5,
+      "evidenceSourceIds": ["src_home"]
+    },
+    {
+      "id": "pain_quality",
+      "title": "Quality consistency",
+      "description": "Batch quality and food-safety compliance monitoring",
+      "inferred": true,
+      "confidence": 0.5,
+      "evidenceSourceIds": ["src_about"]
+    },
+    {
+      "id": "pain_inventory",
+      "title": "Inventory freshness",
+      "description": "Finished-goods availability and warehouse aging",
+      "inferred": true,
+      "confidence": 0.45,
+      "evidenceSourceIds": ["src_home"]
+    },
+    {
+      "id": "pain_fulfillment",
+      "title": "Order fulfillment",
+      "description": "Distribution performance and order fill rate",
+      "inferred": true,
+      "confidence": 0.45,
+      "evidenceSourceIds": ["src_home"]
+    }
+  ],
+  "revenueModel": {
+    "streams": [
+      {
+        "name": "Product sales",
+        "description": "Packaged pasta sales",
+        "inferred": true,
+        "confidence": 0.6,
+        "evidenceSourceIds": ["src_home"]
+      }
+    ],
+    "summary": "Sales of packaged pasta and related food products"
+  },
+  "processes": [
+    {
+      "id": "proc_batch",
+      "name": "Batch production",
+      "description": "Industrial pasta production lines",
+      "inferred": true,
+      "confidence": 0.55,
+      "evidenceSourceIds": ["src_home"]
+    },
+    {
+      "id": "proc_qc",
+      "name": "Quality control",
+      "description": "In-process and finished-goods quality checks",
+      "inferred": true,
+      "confidence": 0.5,
+      "evidenceSourceIds": ["src_about"]
+    },
+    {
+      "id": "proc_dist",
+      "name": "Dispatch and distribution",
+      "description": "Order allocation and distribution",
+      "inferred": true,
+      "confidence": 0.5,
+      "evidenceSourceIds": ["src_home"]
+    }
+  ],
+  "integrations": [],
+  "aiUseCases": [
+    {
+      "id": "ai_demand",
+      "title": "Demand forecasting",
+      "description": "Recommend demand forecasts for pasta SKUs",
+      "priority": "HIGH",
+      "inferred": true,
+      "confidence": 0.4,
+      "evidenceSourceIds": ["src_home"]
+    },
+    {
+      "id": "ai_quality",
+      "title": "Quality anomaly detection",
+      "description": "Suggest review of batch quality holds",
+      "priority": "MEDIUM",
+      "inferred": true,
+      "confidence": 0.4,
+      "evidenceSourceIds": ["src_about"]
+    }
+  ],
+  "competitors": [],
+  "branding": {
+    "primaryColor": "#1B4D3E",
+    "secondaryColors": ["#F5F0E6"],
+    "tone": "industrial food brand",
+    "languages": ["fa", "en"],
+    "rtlRecommended": true,
+    "evidenceSourceIds": ["src_home"]
+  },
+  "sources": [
+    {
+      "id": "src_home",
+      "url": "https://www.zarmacaron.com/",
+      "title": "Zar Macaron homepage fixture",
+      "sourceType": "OFFICIAL_WEBSITE",
+      "authorityScore": 0.95,
+      "fetchedAt": "2026-07-27T00:00:00.000Z",
+      "contentHash": "fixture-home",
+      "status": "FETCHED"
+    },
+    {
+      "id": "src_products",
+      "url": "https://www.zarmacaron.com/products",
+      "title": "Products fixture",
+      "sourceType": "OFFICIAL_WEBSITE",
+      "authorityScore": 0.9,
+      "fetchedAt": "2026-07-27T00:00:00.000Z",
+      "contentHash": "fixture-products",
+      "status": "FETCHED"
+    },
+    {
+      "id": "src_about",
+      "url": "https://www.zarmacaron.com/about",
+      "title": "About fixture",
+      "sourceType": "OFFICIAL_WEBSITE",
+      "authorityScore": 0.85,
+      "fetchedAt": "2026-07-27T00:00:00.000Z",
+      "contentHash": "fixture-about",
+      "status": "FETCHED"
+    }
+  ],
+  "gaps": [],
+  "overallConfidence": 0.86,
+  "discoveredAt": "2026-07-27T00:00:00.000Z",
+  "updatedAt": "2026-07-27T00:00:00.000Z"
+}

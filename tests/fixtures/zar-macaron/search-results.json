@@ -1,0 +1,16 @@
+{
+  "note": "TEST FIXTURE ONLY — sanitized search results for Zar Macaron",
+  "query": "زر ماکارون",
+  "results": [
+    {
+      "title": "زر ماکارون | تولید پاستا",
+      "url": "https://www.zarmacaron.com/",
+      "snippet": "تولیدکننده پاستا، اسپاگتی و محصولات غذایی بسته‌بندی شده"
+    },
+    {
+      "title": "Zar Macaron products",
+      "url": "https://www.zarmacaron.com/products",
+      "snippet": "Spaghetti, shaped pasta, lasagna, fettuccine"
+    }
+  ]
+}

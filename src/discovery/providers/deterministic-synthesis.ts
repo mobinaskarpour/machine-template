@@ -7,6 +7,9 @@ import { newId, nowIso, shortStableHash } from "../../shared/ids.js";
 
 function inferIndustry(text: string): { primary: string; secondary: string[] } {
   const t = text.toLowerCase();
+  if (/pasta|macaroni|noodle|semolina|food\s*manufactur|packaged\s*food|پاستا|ماکارون|ماکرون|صنایع غذایی|مواد غذایی|غذایی/.test(t)) {
+    return { primary: "Food manufacturing", secondary: ["Manufacturing", "Consumer packaged goods"] };
+  }
   if (/concrete|بتن|سیمان|cement|precast/.test(t)) {
     return { primary: "Concrete manufacturing", secondary: ["Building materials"] };
   }
@@ -166,6 +169,16 @@ export class DeterministicKnowledgeSynthesisProvider
       input.sources.find((s) => s.sourceType === "OFFICIAL_WEBSITE" || s.sourceType === "USER_INPUT")
         ?.url ?? primarySource?.url;
 
+    const tradingNames = [
+      ...new Set(
+        input.sources
+          .flatMap((s) => [s.extracted.title, s.extracted.ogTitle].filter(Boolean) as string[])
+          .map((t) => t.split(/[|·\-–—]/)[0]?.trim() ?? "")
+          .filter((t) => t.length >= 2 && t.length <= 80)
+          .filter((t) => t.toLowerCase() !== input.companyName.toLowerCase()),
+      ),
+    ].slice(0, 8);
+
     const knowledge: CompanyKnowledge = {
       schemaVersion: "1.0",
       companyId: input.companyId,
@@ -175,7 +188,7 @@ export class DeterministicKnowledgeSynthesisProvider
       identity: {
         legalName:
           typeof org?.legalName === "string" ? org.legalName : undefined,
-        tradingNames: [],
+        tradingNames,
         description: String(description).slice(0, 1200),
         officialWebsite,
         contact: {

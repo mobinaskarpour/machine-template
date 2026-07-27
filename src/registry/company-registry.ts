@@ -5,6 +5,7 @@ import { newId, nowIso } from "../shared/ids.js";
 import { createSlug, assertSafeSlug } from "./slug.js";
 import { WorkspaceManager } from "../workspaces/workspace-manager.js";
 import { AppError } from "../shared/errors.js";
+import { compactCompanyName, isLikelySameCompanyName } from "./name-normalize.js";
 
 export type ResolveCompanyResult = {
   company: CompanyRecord;
@@ -26,30 +27,35 @@ export class CompanyRegistry {
       throw new AppError("VALIDATION_ERROR", "Company name cannot be empty");
     }
 
-    // Match by exact display name or alias first
     const all = await this.companies.list();
-    const existing =
-      all.find(
-        (c) =>
-          c.displayName.toLowerCase() === name.toLowerCase() ||
-          c.aliases.some((a) => a.toLowerCase() === name.toLowerCase()),
-      ) ?? null;
+    const existing = all.find((c) => this.matchesCompany(c, name)) ?? null;
 
     if (existing) {
-      const projects = await this.projects.listByCompany(existing.id);
+      if (
+        compactCompanyName(existing.displayName) !== compactCompanyName(name) &&
+        !existing.aliases.some(
+          (a) => compactCompanyName(a) === compactCompanyName(name),
+        )
+      ) {
+        await this.companies.update(existing.id, {
+          aliases: [...existing.aliases, name],
+        });
+      }
+      const refreshed = (await this.companies.getById(existing.id)) ?? existing;
+      const projects = await this.projects.listByCompany(refreshed.id);
       let project = projects[0];
       if (!project) {
-        project = await this.createProjectFor(existing);
+        project = await this.createProjectFor(refreshed);
       }
       const ws = await this.workspaces.createOrOpen({
-        companySlug: existing.slug,
-        companyId: existing.id,
+        companySlug: refreshed.slug,
+        companyId: refreshed.id,
         projectId: project.id,
-        displayName: existing.displayName,
+        displayName: refreshed.displayName,
         reopen: true,
       });
       return {
-        company: existing,
+        company: refreshed,
         project,
         workspaceCreated: ws.created,
         workspacePath: ws.paths.root,
@@ -61,6 +67,8 @@ export class CompanyRegistry {
     const timestamp = nowIso();
     const companyId = newId("co");
     const projectId = newId("proj");
+    const noSpace = name.replace(/\s+/g, "");
+    const aliases = noSpace && noSpace !== name ? [noSpace] : [];
 
     const ws = await this.workspaces.createOrOpen({
       companySlug: slug,
@@ -74,7 +82,7 @@ export class CompanyRegistry {
       id: companyId,
       slug,
       displayName: name,
-      aliases: [],
+      aliases,
       status: "CREATED",
       workspacePath: ws.paths.root,
       createdAt: timestamp,
@@ -106,16 +114,19 @@ export class CompanyRegistry {
   }
 
   async findByName(name: string): Promise<CompanyRecord | null> {
-    const needle = name.trim().toLowerCase();
     const all = await this.companies.list();
-    return (
-      all.find(
-        (c) =>
-          c.displayName.toLowerCase() === needle ||
-          c.slug === needle ||
-          c.aliases.some((a) => a.toLowerCase() === needle),
-      ) ?? null
-    );
+    return all.find((c) => this.matchesCompany(c, name.trim())) ?? null;
+  }
+
+  private matchesCompany(company: CompanyRecord, query: string): boolean {
+    if (company.displayName.toLowerCase() === query.toLowerCase()) return true;
+    if (company.aliases.some((a) => a.toLowerCase() === query.toLowerCase())) {
+      return true;
+    }
+    if (company.slug === createSlug(query)) return true;
+    if (isLikelySameCompanyName(company.displayName, query)) return true;
+    if (company.aliases.some((a) => isLikelySameCompanyName(a, query))) return true;
+    return false;
   }
 
   private async createProjectFor(company: CompanyRecord): Promise<ProjectRecord> {

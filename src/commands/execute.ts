@@ -4,6 +4,7 @@ import type { CompanyRepository } from "../persistence/company-repository.js";
 import type { JobRepository } from "../persistence/job-repository.js";
 import type { CompanyDiscoveryService } from "../discovery/company-discovery-service.js";
 import type { CompanyKnowledgeService } from "../knowledge/company-knowledge-service.js";
+import type { CompanyPlanningService } from "../prompts/company-planning-service.js";
 import { AppError, isAppError, toUserMessage } from "../shared/errors.js";
 import type { ParsedCommand, OpsAction } from "./parse.js";
 import type { Logger } from "pino";
@@ -23,22 +24,23 @@ export type CommandContext = {
   logger: Logger;
   discovery: CompanyDiscoveryService;
   knowledge: CompanyKnowledgeService;
+  planning: CompanyPlanningService;
 };
 
 const INTRO = `THE MACHINE — Autonomous AI Company OS Builder
 
-Phase 1 is online: company discovery and CompanyKnowledge.
+Phase 2 is online: company discovery, industry resolution, MasterBuildSpecification, and Master Prompt.
 
-I can discover public company information, validate it, and save structured knowledge.
+I can discover public company information, select an Industry Pack, and produce planning artifacts.
 Application generation and deployment are not implemented yet.`;
 
-const HELP = `Available commands (Phase 1):
+const HELP = `Available commands (Phase 2):
 
 /start — introduction
 /help — this message
 /status <job-id|company-name> — persistent status
-/demo <company-name> — discover company knowledge
-/demo <company-name> | https://example.com — discover with explicit website
+/demo <company-name> — discover + plan (when knowledge is READY)
+/demo <company-name> | https://example.com — discover with explicit website, then plan
 /edit <company-name>: <request> — placeholder (NOT_IMPLEMENTED)
 /ops <company-name>: <action> — status | logs | restart | ssl
 
@@ -154,18 +156,36 @@ async function handleDemo(
       companyName,
       websiteHint,
     });
-    const paths = result.relativePaths
-      ? [
-          "",
-          `Saved: ${result.relativePaths.workspaceKnowledge}`,
-          `Memory: ${result.relativePaths.memoryKnowledge}`,
-        ]
-      : [];
+
+    if (result.needsInput || !result.knowledge || result.knowledge.status === "NEEDS_INPUT") {
+      const paths = result.relativePaths
+        ? [
+            "",
+            `Saved: ${result.relativePaths.workspaceKnowledge}`,
+            `Memory: ${result.relativePaths.memoryKnowledge}`,
+          ]
+        : [];
+      return {
+        ok: result.ok,
+        jobId: result.jobId,
+        companyId: result.companyId,
+        message: [...result.message.split("\n"), ...paths].join("\n"),
+      };
+    }
+
+    const planning = await ctx.planning.planWithKnowledge(
+      result.knowledge,
+      result.companyId,
+      (
+        await ctx.registry.resolveByName(result.knowledge.displayName)
+      ).project.id,
+    );
+
     return {
-      ok: result.ok,
-      jobId: result.jobId,
-      companyId: result.companyId,
-      message: [...result.message.split("\n"), ...paths].join("\n"),
+      ok: planning.ok,
+      jobId: planning.jobId,
+      companyId: planning.companyId,
+      message: planning.message,
     };
   } catch (error) {
     if (isAppError(error)) {
@@ -177,7 +197,6 @@ async function handleDemo(
     throw error;
   }
 }
-
 async function handleEdit(
   companyName: string,
   request: string,

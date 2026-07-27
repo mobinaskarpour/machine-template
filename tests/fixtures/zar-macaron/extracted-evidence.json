@@ -1,0 +1,18 @@
+{
+  "note": "TEST FIXTURE ONLY — extracted evidence excerpts",
+  "companyQuery": "زر ماکارون",
+  "excerpts": [
+    {
+      "field": "products",
+      "text": "اسپاگتی، پاستا شکلی، لازانیا، فِتّوچینی"
+    },
+    {
+      "field": "industry",
+      "text": "تولید صنعتی پاستا و ماکارونی"
+    },
+    {
+      "field": "operations",
+      "text": "برنامه‌ریزی تولید، کنترل کیفیت، انبارداری، توزیع و فروش"
+    }
+  ]
+}

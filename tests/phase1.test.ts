@@ -616,8 +616,10 @@ describe("telegram demo command", () => {
       services.commandContext,
     );
     expect(result.ok).toBe(true);
-    expect(result.message).toContain("Company discovery completed");
-    expect(result.message).toContain("Knowledge saved");
+    expect(result.message).toMatch(
+      /Company planning completed|برنامه‌ریزی شرکت با موفقیت تکمیل شد/,
+    );
+    expect(result.message).not.toContain("Build Successful");
   });
 });
 

@@ -1,0 +1,41 @@
+{
+  "note": "TEST FIXTURE ONLY — expected Master Prompt section ids",
+  "sections": [
+    "MACHINE_CONTEXT",
+    "COMPANY_IDENTITY",
+    "EVIDENCE_QUALITY",
+    "INDUSTRY_CONTEXT",
+    "BUSINESS_OBJECTIVES",
+    "DEPARTMENTS_AND_ROLES",
+    "DASHBOARDS",
+    "KPIS",
+    "WORKFLOWS",
+    "AI_AGENTS",
+    "DATA_MODEL",
+    "BRANDING_AND_LANGUAGE",
+    "UX_REQUIREMENTS",
+    "INTEGRATIONS",
+    "ASSUMPTIONS",
+    "UNRESOLVED_QUESTIONS",
+    "SAFETY_BOUNDARIES",
+    "FUTURE_GENERATION_REQUIREMENTS",
+    "QUALITY_GATES",
+    "OUTPUT_CONTRACT"
+  ],
+  "mustContain": [
+    "زر ماکارون",
+    "Zar Macaron",
+    "manufacturing",
+    "food manufacturing",
+    "Persian",
+    "RTL",
+    "anti-fabrication"
+  ],
+  "mustNotContain": [
+    "ایران فریمکو",
+    "Iran Frameco",
+    "precast concrete",
+    "TELEGRAM_BOT_TOKEN",
+    "TAVILY_API_KEY"
+  ]
+}

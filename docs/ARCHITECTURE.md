@@ -1,4 +1,4 @@
-# Architecture — Phase 0
+# Architecture — Phase 0–2
 
 ## Shape
 
@@ -7,7 +7,7 @@ Modular monolith. Business logic does not import Telegram.
 ```text
 telegram/  →  commands/parse  →  commands/execute
                                    ↓
-                    registry / jobs / workspaces
+         discovery → knowledge → industry → specification → prompts
                                    ↓
                               persistence/
                                    ↓
@@ -20,9 +20,14 @@ telegram/  →  commands/parse  →  commands/execute
 
 | Module | Responsibility |
 |--------|----------------|
-| `app/` | Composition root, process entry |
+| `app/` | Composition root, discover/plan CLIs |
 | `telegram/` | Telegraf wiring only |
 | `commands/` | Deterministic parsers + handlers |
+| `discovery/` | Company discovery orchestrator |
+| `knowledge/` | CompanyKnowledge schema + dual persistence |
+| `industries/` | Packs, resolver, industry engine |
+| `specifications/` | MasterBuildSpecification |
+| `prompts/` | Master Prompt builder + planning service |
 | `jobs/` | Job lifecycle / transitions |
 | `registry/` | Company resolution + slug service |
 | `workspaces/` | Isolated project directories |
@@ -30,33 +35,10 @@ telegram/  →  commands/parse  →  commands/execute
 | `runners/` | Safe spawn / `/bin/bash -lc` |
 | `config/` | Zod-validated env |
 | `logging/` | Pino + redaction hooks |
-| `security/` | Path guards + secret redaction |
+| `security/` | Path guards, SSRF, secret redaction |
 | `shared/` | Errors, ids, Zod domain schemas |
 | `future/` | Pipeline contracts (no real impl) |
 
-## Dependency direction
+## Phase 2 note
 
-- Handlers depend on services/repositories.
-- Repositories do not depend on Telegram.
-- Future generators depend on contracts, not Telegraf.
-- Codex CLI must sit behind `CodeGenerationProvider` later.
-
-## Persistence decision
-
-**One JSON file per record** under:
-
-- `data/companies/<id>.json` (+ `index.json` slug map)
-- `data/projects-meta/<id>.json` (+ `index.json`)
-- `data/jobs/<id>.json`
-
-Writes use temp file + `fsync` + `rename`. Index updates use an in-process mutex.
-
-Workspace trees live separately under `PROJECTS_ROOT/<company-slug>/`.
-
-
-## Phase 1 modules
-
-- `discovery/` — orchestrator, ranking, extraction, providers
-- `knowledge/` — schema, validation, dual-persistence repository
-- `integrations/` — Tavily, Serper, Codex adapters
-- `security/safe-url.ts`, `security/untrusted-content.ts`
+Phase 2 prepares canonical planning artifacts. It does not generate, build, or deploy a company application.

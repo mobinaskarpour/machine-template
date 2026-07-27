@@ -17,6 +17,11 @@ data/memory/*
 !data/memory/companies/
 data/memory/companies/*
 !data/memory/companies/.gitkeep
+!data/memory/specifications/
+data/memory/specifications/*
+!data/memory/specifications/.gitkeep
+data/jobs/*
+!data/jobs/.gitkeep
 data/projects-meta/*
 !data/projects-meta/.gitkeep
 

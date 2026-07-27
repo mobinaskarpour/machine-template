@@ -1,4 +1,3 @@
-import { mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import type { Logger } from "pino";
 import type { AppConfig } from "../config/env.js";
@@ -20,6 +19,11 @@ import type {
   SearchProvider,
   WebsiteFetcher,
 } from "../discovery/discovery-types.js";
+import { IndustryEngine } from "../industries/industry-engine.js";
+import { FsMasterBuildSpecificationRepository } from "../specifications/master-build-specification-repository.js";
+import { FsMasterPromptRepository } from "../prompts/master-prompt-repository.js";
+import { CompanyPlanningService } from "../prompts/company-planning-service.js";
+import { mkdir } from "node:fs/promises";
 
 export type AppServices = {
   config: AppConfig;
@@ -33,6 +37,8 @@ export type AppServices = {
   runner: SafeCommandRunner;
   knowledge: CompanyKnowledgeService;
   discovery: CompanyDiscoveryService;
+  industry: IndustryEngine;
+  planning: CompanyPlanningService;
   commandContext: CommandContext;
 };
 
@@ -51,6 +57,8 @@ export async function createAppServices(
   await mkdir(config.jobsDir, { recursive: true });
   await mkdir(config.logsDir, { recursive: true });
   await mkdir(config.memoryDir, { recursive: true });
+  const memorySpecsDir = resolve(config.dataRoot, "memory", "specifications");
+  await mkdir(memorySpecsDir, { recursive: true });
   await mkdir(resolve(config.dataRoot, "projects-meta"), { recursive: true });
 
   const companies = new FsCompanyRepository(config.companiesDir);
@@ -92,6 +100,22 @@ export async function createAppServices(
     logger,
   });
   const discovery = new CompanyDiscoveryService(orchestrator);
+  const industry = new IndustryEngine();
+  const specifications = new FsMasterBuildSpecificationRepository(
+    config.projectsRoot,
+    memorySpecsDir,
+  );
+  const prompts = new FsMasterPromptRepository(config.projectsRoot);
+  const planning = new CompanyPlanningService({
+    projectsRoot: config.projectsRoot,
+    registry,
+    knowledge,
+    industry,
+    specifications,
+    prompts,
+    jobs: jobManager,
+    logger,
+  });
 
   const commandContext: CommandContext = {
     registry,
@@ -101,6 +125,7 @@ export async function createAppServices(
     logger,
     discovery,
     knowledge,
+    planning,
   };
 
   return {
@@ -115,6 +140,8 @@ export async function createAppServices(
     runner,
     knowledge,
     discovery,
+    industry,
+    planning,
     commandContext,
   };
 }

@@ -45,3 +45,10 @@ Do not store secrets under `data/`, `.factory/` workspace metadata, or job outpu
 - SSRF-safe URL validation and redirect checks
 - Untrusted webpage content delimiting / prompt-injection warnings
 - Discovery artifacts store redacted text samples only (not secrets)
+
+## Phase 2 additions
+
+- Master Prompt never receives raw HTML or search payloads
+- No application generation or deployment from planning
+- Agents remain specification records only
+- Runtime knowledge/specification mirrors stay gitignored

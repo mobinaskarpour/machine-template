@@ -1,0 +1,12 @@
+{
+  "note": "TEST FIXTURE ONLY — expected industry resolution direction",
+  "selectedPackId": "manufacturing",
+  "minConfidence": 0.5,
+  "expectedSignals": [
+    "food manufacturing",
+    "pasta",
+    "macaroni",
+    "تولید",
+    "صنایع غذایی"
+  ]
+}

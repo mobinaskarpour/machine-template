@@ -2,50 +2,36 @@
 
 ## Phase 0 — Core Foundation
 
-Implemented:
+Implemented: Telegram router, jobs, registry, workspaces, safe config/logging/runner, tests.
 
-- Telegram command router
-- Job lifecycle + persistence
-- Company/project registry
-- Workspace manager
-- Safe config + logging
-- Safe command runner
-- Future module interfaces
-- Infrastructure tests
+## Phase 1 — Company Discovery and CompanyKnowledge
 
-## Phase 1 — Company Discovery and CompanyKnowledge (current)
+Implemented: `/demo` discovery, Tavily/Serper adapters, SSRF-safe fetch, CompanyKnowledge dual persistence, `npm run discover`.
+
+## Phase 2 — Master Prompt Builder and Industry Engine (current)
 
 Implemented:
 
-- `/demo` discovery pipeline with optional `| website`
-- Search provider interfaces (Tavily/Serper)
-- SSRF-safe website fetch
-- Deterministic extraction + synthesis
-- Optional Codex synthesis adapter
-- CompanyKnowledge schema, validation, confidence
-- Dual persistence (workspace + memory)
-- Discovery artifacts + knowledge history
-- `npm run discover` CLI
-- Phase 1 tests
+- Industry Pack schema + 10 packs (general, manufacturing, construction, real-estate, medical, education, legal, oil-gas, steel, banking)
+- Deterministic industry resolution (Persian + English aliases)
+- MasterBuildSpecification merge, prioritization, confidence, readiness
+- Master Prompt builder with stable sections and hashes
+- Persistence under `.factory/` + `data/memory/specifications/`
+- `/demo` continues into planning when knowledge is READY
+- `npm run plan -- "Company"`
+- Phase 2 tests (Zar Macaron primary fixture)
+
+Phase 2 prepares canonical planning artifacts. It does **not** generate, build, or deploy a company application.
 
 Still **not** implemented:
 
-- Master Prompt Builder
-- Industry Engine (beyond light classification)
 - OS Blueprint / application generation
-- dashboards, workflows, AI agents, mock data generation
-- quality iteration for generated apps
+- Executable dashboards, workflows, or AI agents
+- Quality iteration for generated apps
 - PM2 / Docker / Vercel deploy
 - `/edit` execution
 - `/ops restart` / `/ops ssl`
 
-## Phase 2 — Master Prompt Builder and Industry Engine (next)
+## Phase 3 — Company OS Blueprint Generation (next)
 
 Not started.
-
-## Later phases (planned)
-
-- Blueprint + generators
-- Quality iteration
-- Deployment + persist knowledge loop
-- Edit / ops loop

@@ -1,49 +1,34 @@
-# Data layout — Phase 0
+# Data layout — Phase 2
 
 ```text
 data/
 ├── companies/
-│   ├── index.json          # slug → companyId
-│   └── <companyId>.json    # CompanyRecord
+│   ├── index.json
+│   └── <companyId>.json
 ├── projects-meta/
-│   ├── index.json          # slug → projectId
-│   └── <projectId>.json    # ProjectRecord
+│   ├── index.json
+│   └── <projectId>.json
 ├── jobs/
-│   └── <jobId>.json        # JobRecord
-├── logs/                   # reserved
+│   └── <jobId>.json
+├── memory/
+│   ├── companies/<slug>.json              # knowledge mirror
+│   └── specifications/<slug>.json         # specification mirror
 └── projects/
     └── <company-slug>/
         ├── .factory/
-        │   ├── company.json
-        │   ├── project.json
-        │   └── state.json
-        ├── generated/
-        ├── source/
+        │   ├── knowledge.json
+        │   ├── industry-resolution.json
+        │   ├── master-build-specification.json
+        │   ├── master-prompt.json
+        │   ├── master-prompt.txt
+        │   └── history/
+        │       ├── knowledge/
+        │       ├── specifications/
+        │       └── prompts/
+        ├── generated/          # reserved (Phase 3+)
+        ├── source/             # reserved
         ├── logs/
         └── artifacts/
 ```
 
-## Job lifecycle
-
-```text
-QUEUED → RUNNING → SUCCEEDED
-QUEUED → CANCELLED
-RUNNING → FAILED
-RUNNING → CANCELLED
-```
-
-Invalid transitions raise `INVALID_STATE_TRANSITION`.
-
-## Workspace isolation
-
-Each company slug gets its own directory under `PROJECTS_ROOT`. Reopening an existing workspace does not overwrite identity files unexpectedly; conflicts raise `ALREADY_EXISTS`.
-
-
-## Phase 1 knowledge
-
-```text
-data/memory/companies/<slug>.json
-data/projects/<slug>/.factory/knowledge.json
-data/projects/<slug>/.factory/history/knowledge/
-data/projects/<slug>/artifacts/discovery/<job-id>/
-```
+Runtime company data is gitignored. Do not commit discovery or planning artifacts.
