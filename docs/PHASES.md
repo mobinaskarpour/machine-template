@@ -1,6 +1,6 @@
 # Phases
 
-## Phase 0 — Core Foundation (current)
+## Phase 0 — Core Foundation
 
 Implemented:
 
@@ -13,29 +13,39 @@ Implemented:
 - Future module interfaces
 - Infrastructure tests
 
-Intentionally **not** implemented:
+## Phase 1 — Company Discovery and CompanyKnowledge (current)
 
-- company research / website discovery
-- CompanyKnowledge generation
-- industry-specific generation
-- master prompt construction
-- OS blueprint generation
-- brand / dashboards / workflows / AI agents / mock data generation
-- application build & deploy
-- scoped file edits
-- ops restart / SSL / log streaming via shell
-- Codex CLI execution
+Implemented:
 
-## Phase 1 — Company Discovery and CompanyKnowledge (next)
+- `/demo` discovery pipeline with optional `| website`
+- Search provider interfaces (Tavily/Serper)
+- SSRF-safe website fetch
+- Deterministic extraction + synthesis
+- Optional Codex synthesis adapter
+- CompanyKnowledge schema, validation, confidence
+- Dual persistence (workspace + memory)
+- Discovery artifacts + knowledge history
+- `npm run discover` CLI
+- Phase 1 tests
 
-Recommended next step only. Not started in this repository state.
+Still **not** implemented:
 
-Will add real discovery adapters and a validated knowledge model, still without full OS generation.
+- Master Prompt Builder
+- Industry Engine (beyond light classification)
+- OS Blueprint / application generation
+- dashboards, workflows, AI agents, mock data generation
+- quality iteration for generated apps
+- PM2 / Docker / Vercel deploy
+- `/edit` execution
+- `/ops restart` / `/ops ssl`
+
+## Phase 2 — Master Prompt Builder and Industry Engine (next)
+
+Not started.
 
 ## Later phases (planned)
 
-- Industry engine + master prompt
 - Blueprint + generators
 - Quality iteration
-- Deployment + persist knowledge
+- Deployment + persist knowledge loop
 - Edit / ops loop
