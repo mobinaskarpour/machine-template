@@ -38,3 +38,7 @@ Any failure maps to `GENERATION_*_FAILED` and blocks promotion.
 ## Security
 
 See [GENERATED-APP-SECURITY](./GENERATED-APP-SECURITY.md).
+
+## Quality follow-on (Phase 5)
+
+Generation validation is necessary but not sufficient for acceptance. Phase 5 re-runs auditors (including coverage, routes, security, and optional browser QA), scores dimensions, and applies acceptance gates. Failed quality acceptance does not deploy the app. See [QUALITY-ACCEPTANCE](./QUALITY-ACCEPTANCE.md).

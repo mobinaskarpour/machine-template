@@ -30,6 +30,7 @@ import type {
 } from "../src/discovery/discovery-types.js";
 import { DeterministicKnowledgeSynthesisProvider } from "../src/discovery/providers/deterministic-synthesis.js";
 import { createStubGenerationService } from "../src/generation/test-stub-generation.js";
+import { createStubQualityService } from "../src/quality/test-stub-quality.js";
 import { rankWebsiteCandidates, selectTopWebsite } from "../src/discovery/source-ranking.js";
 import { stripHtmlToText } from "../src/security/untrusted-content.js";
 import { readFileSync } from "node:fs";
@@ -607,6 +608,7 @@ describe("telegram demo command", () => {
         }),
         synthesis: new DeterministicKnowledgeSynthesisProvider(),
         generation: createStubGenerationService(),
+        quality: createStubQualityService(),
       },
     );
     const result = await executeCommand(

@@ -7,6 +7,7 @@ import type { CompanyKnowledgeService } from "../knowledge/company-knowledge-ser
 import type { CompanyPlanningService } from "../prompts/company-planning-service.js";
 import type { CompanyBlueprintPlanningService } from "../blueprints/company-blueprint-planning-service.js";
 import type { ApplicationGenerationService } from "../generation/application-generation-service.js";
+import type { QualityIterationService } from "../quality/quality-iteration-service.js";
 import { AppError, isAppError, toUserMessage } from "../shared/errors.js";
 import type { ParsedCommand, OpsAction } from "./parse.js";
 import type { Logger } from "pino";
@@ -29,21 +30,22 @@ export type CommandContext = {
   planning: CompanyPlanningService;
   blueprint: CompanyBlueprintPlanningService;
   generation: ApplicationGenerationService;
+  quality: QualityIterationService;
 };
 
 const INTRO = `THE MACHINE — Autonomous AI Company OS Builder
 
-Phase 4 is online: discovery, planning, blueprint, and application code generation.
+Phase 5 is online: discovery, planning, blueprint, generation, and quality iteration.
 
-I can discover companies, build blueprints, and generate a build-verified Company OS demo application.
+I can discover companies, build blueprints, generate a build-verified Company OS demo, and run quality audits/repairs.
 Deployment is not implemented — generated apps are not published publicly.`;
 
-const HELP = `Available commands (Phase 4):
+const HELP = `Available commands (Phase 5):
 
 /start — introduction
 /help — this message
 /status <job-id|company-name> — persistent status
-/demo <company-name> — discover → plan → blueprint → generate (when ready)
+/demo <company-name> — discover → plan → blueprint → generate → quality (when ready)
 /demo <company-name> | https://example.com — explicit website, then full pipeline
 /edit <company-name>: <request> — placeholder (NOT_IMPLEMENTED)
 /ops <company-name>: <action> — status | logs | restart | ssl
@@ -221,11 +223,26 @@ async function handleDemo(
       ).project.id,
     });
 
+    if (!generation.ok) {
+      return {
+        ok: false,
+        jobId: generation.jobId,
+        companyId: generation.companyId,
+        message: [blueprint.message, "", generation.message].join("\n"),
+      };
+    }
+
+    const quality = await ctx.quality.iterateFromExisting(
+      planning.knowledge.displayName,
+    );
+
     return {
-      ok: generation.ok,
-      jobId: generation.jobId,
+      ok: generation.ok && quality.ok,
+      jobId: quality.jobId ?? generation.jobId,
       companyId: generation.companyId,
-      message: [blueprint.message, "", generation.message].join("\n"),
+      message: [blueprint.message, "", generation.message, "", quality.message].join(
+        "\n",
+      ),
     };
   } catch (error) {
     if (isAppError(error)) {

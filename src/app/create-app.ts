@@ -26,6 +26,7 @@ import { CompanyPlanningService } from "../prompts/company-planning-service.js";
 import { FsCompanyOSBlueprintRepository } from "../blueprints/company-os-blueprint-repository.js";
 import { CompanyBlueprintPlanningService } from "../blueprints/company-blueprint-planning-service.js";
 import { ApplicationGenerationService } from "../generation/application-generation-service.js";
+import { QualityIterationService } from "../quality/quality-iteration-service.js";
 import { mkdir } from "node:fs/promises";
 
 export type AppServices = {
@@ -44,6 +45,7 @@ export type AppServices = {
   planning: CompanyPlanningService;
   blueprint: CompanyBlueprintPlanningService;
   generation: ApplicationGenerationService;
+  quality: QualityIterationService;
   commandContext: CommandContext;
 };
 
@@ -55,6 +57,7 @@ export async function createAppServices(
     fetcher?: WebsiteFetcher;
     synthesis?: KnowledgeSynthesisProvider;
     generation?: ApplicationGenerationService;
+    quality?: QualityIterationService;
   },
 ): Promise<AppServices> {
   await mkdir(config.dataRoot, { recursive: true });
@@ -65,8 +68,10 @@ export async function createAppServices(
   await mkdir(config.memoryDir, { recursive: true });
   const memorySpecsDir = resolve(config.dataRoot, "memory", "specifications");
   const memoryBlueprintsDir = resolve(config.dataRoot, "memory", "blueprints");
+  const memoryQualityDir = resolve(config.dataRoot, "memory", "quality");
   await mkdir(memorySpecsDir, { recursive: true });
   await mkdir(memoryBlueprintsDir, { recursive: true });
+  await mkdir(memoryQualityDir, { recursive: true });
   await mkdir(resolve(config.dataRoot, "projects-meta"), { recursive: true });
 
   const companies = new FsCompanyRepository(config.companiesDir);
@@ -153,6 +158,18 @@ export async function createAppServices(
       runner,
       logger,
     });
+  const quality =
+    overrides?.quality ??
+    new QualityIterationService({
+      cwd: process.cwd(),
+      projectsRoot: config.projectsRoot,
+      registry,
+      blueprints,
+      jobs: jobManager,
+      runner,
+      logger,
+      memoryQualityDir,
+    });
 
   const commandContext: CommandContext = {
     registry,
@@ -165,6 +182,7 @@ export async function createAppServices(
     planning,
     blueprint,
     generation,
+    quality,
   };
 
   return {
@@ -183,6 +201,7 @@ export async function createAppServices(
     planning,
     blueprint,
     generation,
+    quality,
     commandContext,
   };
 }

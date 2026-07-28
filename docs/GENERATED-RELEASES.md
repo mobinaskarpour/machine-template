@@ -40,3 +40,7 @@ Manifest / build report:
 ## Idempotency
 
 Matching `blueprintHash` + `PROMOTED` manifest → reuse without rebuild when `force` is false.
+
+## Quality follow-on (Phase 5)
+
+Accepted quality runs may promote a repaired staging tree as a new generation while retaining prior releases under the same retention policy. Repair staging lives under `generated/staging/quality-<runId>/app/` and never mutates the source release during repair. Phase 5 does not deploy or expose the application publicly. See [QUALITY-ITERATION](./QUALITY-ITERATION.md) and [QUALITY-ARTIFACTS](./QUALITY-ARTIFACTS.md).

@@ -1,4 +1,4 @@
-# Architecture — Phase 0–4
+# Architecture — Phase 0–5
 
 Modular monolith. Telegram is an adapter only.
 
@@ -13,13 +13,27 @@ telegram/commands
                                               install/typecheck/test/build (local)
                                                                         ↓
                                               security scan → promote release
+                                                                        ↓
+                                              quality auditors → score → repair staging
+                                                                        ↓
+                                              acceptance → quality artifacts
                                          ↓
                                    persistence / data/
 ```
 
-Phase 4 generates and build-verifies an application release. It does not deploy or expose that application publicly.
+Phase 5 audits and repairs a generated application in an isolated release workflow. It does not deploy or expose the application publicly.
 
-## Phase 4 modules
+## Phase 5 modules
+
+| Module | Responsibility |
+|--------|----------------|
+| `quality/` | Iteration service, scoring, acceptance, issue schemas |
+| `quality/auditors/` | Static, route, coverage, data, functional, RTL, content, security, a11y, visual, responsive, performance |
+| `quality/repair/` | Staging copy, planner, validators, deterministic / Codex providers |
+| `quality/runtime/` | Loopback local app runner, health probe, browser QA, process cleanup |
+| `app/quality-cli.ts` | Service-level quality CLI |
+
+## Phase 4 modules (still active)
 
 | Module | Responsibility |
 |--------|----------------|
@@ -44,4 +58,4 @@ Improved Persian transliteration may suggest `zar-makaron` for `زر ماکار�
 ## Release retention
 
 - Last **3** promoted releases are retained under `generated/releases/`
-- Staging under `generated/staging/` may be retained temporarily for debugging
+- Staging under `generated/staging/` may be retained temporarily for debugging (including `quality-<runId>` repair trees)

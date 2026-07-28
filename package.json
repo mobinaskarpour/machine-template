@@ -2,7 +2,7 @@
   "name": "the-machine",
   "version": "0.1.0",
   "private": true,
-  "description": "THE MACHINE — Autonomous AI Company OS Builder (Phase 4 application generation)",
+  "description": "THE MACHINE — Autonomous AI Company OS Builder (Phase 5 quality iteration)",
   "type": "module",
   "engines": {
     "node": ">=18.18.0"
@@ -19,6 +19,7 @@
     "plan": "tsx src/app/plan-cli.ts",
     "blueprint": "tsx src/app/blueprint-cli.ts",
     "generate": "tsx src/app/generate-cli.ts",
+    "quality": "tsx src/app/quality-cli.ts",
     "migrate:slug": "tsx src/app/migrate-slug-cli.ts"
   },
   "dependencies": {

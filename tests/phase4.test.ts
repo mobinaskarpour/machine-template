@@ -21,6 +21,7 @@ import { AppError, isAppError } from "../src/shared/errors.js";
 import type { FetchedPage, WebsiteFetcher } from "../src/discovery/discovery-types.js";
 import { nowIso } from "../src/shared/ids.js";
 import { createStubGenerationService } from "../src/generation/test-stub-generation.js";
+import { createStubQualityService } from "../src/quality/test-stub-quality.js";
 import { buildGenerationPlan } from "../src/generation/generation-plan-builder.js";
 import { parseGenerationPlan } from "../src/generation/generation-plan-schema.js";
 import { hashTemplate, copyTemplateToStaging } from "../src/generation/template-manager.js";
@@ -495,6 +496,7 @@ describe("Stub /demo through generation", () => {
         "*": zarHome,
       }),
       generation: createStubGenerationService(),
+      quality: createStubQualityService(),
     });
     const result = await executeCommand(
       {

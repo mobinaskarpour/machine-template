@@ -1,4 +1,4 @@
-# Security — Phase 0–4
+# Security — Phase 0–5
 
 ## Secrets
 
@@ -71,4 +71,16 @@ Do not store secrets under `data/`, `.factory/` workspace metadata, or job outpu
 - Failed builds do not promote
 - Phase 4 generates and build-verifies an application release. It does not deploy or expose that application publicly.
 
-See also [GENERATED-APP-SECURITY](./GENERATED-APP-SECURITY.md).
+## Phase 5 additions
+
+- Quality repair staging copies under `generated/staging/quality-<runId>/` — never edits the source release in place during repair
+- Staging copy rejects symlinks and excludes `.env*`, `node_modules`, `.next`, `.git`
+- Repair path policy blocks env/docker/pm2/control-plane files
+- Local QA servers bind `127.0.0.1` only; process trees are killed and verified stopped
+- Browser QA never triggers Playwright browser downloads as a side effect of detection
+- High/critical security issues and failed security scans block acceptance even with high visual scores
+- User-facing quality messages never include absolute paths, secrets, or claim deployment
+
+Phase 5 audits and repairs a generated application in an isolated release workflow. It does not deploy or expose the application publicly.
+
+See also [GENERATED-APP-SECURITY](./GENERATED-APP-SECURITY.md) and [QUALITY-ACCEPTANCE](./QUALITY-ACCEPTANCE.md).

@@ -52,7 +52,12 @@ export type ErrorCode =
   | "GENERATION_SECURITY_FAILED"
   | "GENERATION_PROMOTION_FAILED"
   | "GENERATION_NOT_READY"
-  | "GENERATION_COVERAGE_FAILED";
+  | "GENERATION_COVERAGE_FAILED"
+  | "QUALITY_NOT_READY"
+  | "QUALITY_AUDIT_FAILED"
+  | "QUALITY_REPAIR_FAILED"
+  | "QUALITY_ACCEPTANCE_FAILED"
+  | "QUALITY_RUNTIME_FAILED";
 
 export class AppError extends Error {
   readonly code: ErrorCode;
@@ -124,6 +129,11 @@ const DISCOVERY_USER_MESSAGES: Partial<Record<ErrorCode, string>> = {
   GENERATION_PROMOTION_FAILED: "Promoting the generated release failed.",
   GENERATION_NOT_READY: "Company artifacts are not ready for code generation.",
   GENERATION_COVERAGE_FAILED: "Generated application is missing required Blueprint coverage.",
+  QUALITY_NOT_READY: "Generated release is not ready for quality iteration.",
+  QUALITY_AUDIT_FAILED: "Quality audit failed.",
+  QUALITY_REPAIR_FAILED: "Quality repair failed.",
+  QUALITY_ACCEPTANCE_FAILED: "Quality acceptance gate rejected the release.",
+  QUALITY_RUNTIME_FAILED: "Local quality runtime failed.",
 };
 
 export function toUserMessage(error: unknown): string {

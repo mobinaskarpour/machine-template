@@ -62,6 +62,7 @@ export const JobTypeSchema = z.enum([
   "OPS",
   "DISCOVERY",
   "GENERATION",
+  "QUALITY",
   "DEPLOYMENT",
 ]);
 

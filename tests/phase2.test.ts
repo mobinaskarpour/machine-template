@@ -20,6 +20,7 @@ import type { FetchedPage, WebsiteFetcher } from "../src/discovery/discovery-typ
 import { nowIso } from "../src/shared/ids.js";
 import { AppError } from "../src/shared/errors.js";
 import { createStubGenerationService } from "../src/generation/test-stub-generation.js";
+import { createStubQualityService } from "../src/quality/test-stub-quality.js";
 
 const fixtureRoot = join(process.cwd(), "tests/fixtures/zar-macaron");
 const zarKnowledge = parseCompanyKnowledge(
@@ -400,6 +401,7 @@ describe("Phase 2 pipeline persistence", () => {
         "*": zarHome,
       }),
       generation: createStubGenerationService(),
+      quality: createStubQualityService(),
     });
     const result = await executeCommand(
       {

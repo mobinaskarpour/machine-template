@@ -26,6 +26,7 @@ import { AppError } from "../src/shared/errors.js";
 import type { FetchedPage, WebsiteFetcher } from "../src/discovery/discovery-types.js";
 import { nowIso } from "../src/shared/ids.js";
 import { createStubGenerationService } from "../src/generation/test-stub-generation.js";
+import { createStubQualityService } from "../src/quality/test-stub-quality.js";
 import { calculateBlueprintQuality } from "../src/blueprints/blueprint-readiness.js";
 
 const fixtureRoot = join(process.cwd(), "tests/fixtures/zar-macaron");
@@ -251,6 +252,7 @@ describe("Phase 3 pipeline", () => {
         "*": zarHome,
       }),
       generation: createStubGenerationService(),
+      quality: createStubQualityService(),
     });
     const result = await executeCommand(
       {

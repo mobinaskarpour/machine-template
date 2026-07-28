@@ -26,6 +26,9 @@ data/memory/blueprints/*
 !data/memory/generations/
 data/memory/generations/*
 !data/memory/generations/.gitkeep
+!data/memory/quality/
+data/memory/quality/*
+!data/memory/quality/.gitkeep
 data/jobs/*
 !data/jobs/.gitkeep
 data/projects-meta/*

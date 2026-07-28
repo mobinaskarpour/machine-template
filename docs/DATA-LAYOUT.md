@@ -1,4 +1,4 @@
-# Data layout — Phase 4
+# Data layout — Phase 5
 
 ```text
 data/
@@ -6,7 +6,8 @@ data/
 │   ├── companies/<slug>.json
 │   ├── specifications/<slug>.json
 │   ├── blueprints/<slug>.json
-│   └── generations/          # reserved mirror root (.gitkeep)
+│   ├── generations/          # reserved mirror root (.gitkeep)
+│   └── quality/              # reserved mirror root
 └── projects/<slug>/
     ├── .factory/
     │   ├── knowledge.json
@@ -20,17 +21,24 @@ data/
     │   ├── generation-manifest.json
     │   ├── build-report.json
     │   ├── current-generation.json
+    │   ├── current-quality.json
+    │   ├── quality-summary.json
     │   └── history/
     │       ├── knowledge/
     │       ├── specifications/
     │       ├── prompts/
     │       └── blueprints/
     ├── generated/
-    │   ├── staging/<jobId>/app/     # ephemeral / may be retained temporarily
-    │   └── releases/<generationId>/app/  # immutable promoted release (keep last 3)
-    └── artifacts/generation/<jobId>/
+    │   ├── staging/<jobId>/app/                 # generation staging
+    │   ├── staging/quality-<runId>/app/         # quality repair staging
+    │   └── releases/<generationId>/app/         # immutable promoted release (keep last 3)
+    └── artifacts/
+        ├── generation/<jobId>/
+        └── quality/<qualityRunId>/
 ```
 
-Runtime artifacts under `data/projects/` are gitignored. Generation artifacts live under projects (already ignored); `data/memory/generations/` is reserved for optional future mirrors.
+Runtime artifacts under `data/projects/` are gitignored.
 
-Phase 4 generates and build-verifies an application release. It does not deploy or expose that application publicly.
+Phase 5 audits and repairs a generated application in an isolated release workflow. It does not deploy or expose the application publicly.
+
+See [QUALITY-ARTIFACTS](./QUALITY-ARTIFACTS.md).

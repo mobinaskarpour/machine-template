@@ -47,6 +47,10 @@ If `current-generation.json` points at a `PROMOTED` manifest whose `blueprintHas
 
 Any validation, typecheck, test, build, or security failure fails the job and **does not** update `current-generation.json`.
 
+## What follows (Phase 5)
+
+After a successful promote, quality iteration audits the release, may repair a staging copy, and evaluates acceptance. Quality does **not** deploy or expose the app publicly. See [QUALITY-ITERATION](./QUALITY-ITERATION.md).
+
 ## Related docs
 
 - [GENERATION-PLAN](./GENERATION-PLAN.md)
@@ -55,3 +59,4 @@ Any validation, typecheck, test, build, or security failure fails the job and **
 - [GENERATED-APP-VALIDATION](./GENERATED-APP-VALIDATION.md)
 - [MOCK-DATA-ENGINE](./MOCK-DATA-ENGINE.md)
 - [GENERATED-APP-SECURITY](./GENERATED-APP-SECURITY.md)
+- [QUALITY-ITERATION](./QUALITY-ITERATION.md)

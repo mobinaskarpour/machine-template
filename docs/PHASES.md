@@ -27,7 +27,7 @@ Implemented.
 
 Phase 3 generates an implementation-ready Company OS Blueprint. Application source generation is Phase 4.
 
-## Phase 4 — Application Code Generation Engine (current)
+## Phase 4 — Application Code Generation Engine
 
 Implemented:
 
@@ -44,8 +44,23 @@ Implemented:
 
 Phase 4 generates and build-verifies an application release. It does not deploy or expose that application publicly.
 
-## Phase 5 — Deployment and public exposure (next)
+## Phase 5 — Quality Iteration (current)
+
+Implemented:
+
+- Quality auditors (static, route, coverage, data, functional, RTL, content, security, accessibility, visual, responsive, performance)
+- Weighted scoring + confidence when dimensions are skipped (`null` ≠ 1.0)
+- Issue fingerprinting, classification, and deduplication
+- Acceptance gates (critical / security / build hard stops; skipped browser QA warnings)
+- Isolated repair staging + deterministic repairs; optional Codex repairs
+- Loopback-only local app runner, health probe, browser QA when Playwright is available
+- Artifacts under `.factory/current-quality.json` and `artifacts/quality/<runId>/`
+- `npm run quality` and `/demo` through quality after generation
+
+Phase 5 audits and repairs a generated application in an isolated release workflow. It does not deploy or expose the application publicly.
+
+## Phase 6 — Deployment and public exposure (next)
 
 Not started.
 
-Public deployment, TLS, process supervision, and exposing a generated Company OS on a public URL.
+Public deployment via PM2 (or equivalent process supervision), TLS, ops restart, and exposing a generated Company OS on a public URL.
