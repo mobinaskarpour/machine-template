@@ -8,6 +8,11 @@ import type { CompanyPlanningService } from "../prompts/company-planning-service
 import type { CompanyBlueprintPlanningService } from "../blueprints/company-blueprint-planning-service.js";
 import type { ApplicationGenerationService } from "../generation/application-generation-service.js";
 import type { QualityIterationService } from "../quality/quality-iteration-service.js";
+import type { DeploymentService } from "../deployment/deployment-service.js";
+import type { OperationsService } from "../operations/operations-service.js";
+import { formatDeploymentMessage } from "../deployment/deployment-summary.js";
+import type { AppConfig } from "../config/env.js";
+import { isAdminTelegramUser } from "../operations/operations-policy.js";
 import { AppError, isAppError, toUserMessage } from "../shared/errors.js";
 import type { ParsedCommand, OpsAction } from "./parse.js";
 import type { Logger } from "pino";
@@ -19,45 +24,63 @@ export type CommandResult = {
   companyId?: string;
 };
 
+export type CommandActor =
+  | { channel: "cli" }
+  | { channel: "telegram"; telegramUserId?: number };
+
+export type ExecuteCommandOptions = {
+  /** Who is issuing the command; defaults to a trusted local CLI actor. */
+  actor?: CommandActor;
+  /** CLI escape hatch equivalent to a Telegram confirm reply for mutating /ops actions. */
+  skipConfirmation?: boolean;
+};
+
 export type CommandContext = {
   registry: CompanyRegistry;
   jobs: JobManager;
   companies: CompanyRepository;
   jobRepo: JobRepository;
   logger: Logger;
+  config: AppConfig;
   discovery: CompanyDiscoveryService;
   knowledge: CompanyKnowledgeService;
   planning: CompanyPlanningService;
   blueprint: CompanyBlueprintPlanningService;
   generation: ApplicationGenerationService;
   quality: QualityIterationService;
+  deployment: DeploymentService;
+  operations: OperationsService;
 };
 
 const INTRO = `THE MACHINE — Autonomous AI Company OS Builder
 
-Phase 5 is online: discovery, planning, blueprint, generation, and quality iteration.
+Phase 6 is online: discovery, planning, blueprint, generation, quality iteration, and deployment/operations.
 
-I can discover companies, build blueprints, generate a build-verified Company OS demo, and run quality audits/repairs.
-Deployment is not implemented — generated apps are not published publicly.`;
+I can discover companies, build blueprints, generate a build-verified Company OS demo, run quality audits/repairs, and deploy the result to a local port (loopback only) with pre-deployment gates.
+Public exposure (custom domain + TLS) still requires manual DNS/nginx/SSL setup.`;
 
-const HELP = `Available commands (Phase 5):
+const HELP = `Available commands (Phase 6):
 
 /start — introduction
 /help — this message
 /status <job-id|company-name> — persistent status
-/demo <company-name> — discover → plan → blueprint → generate → quality (when ready)
+/demo <company-name> — discover → plan → blueprint → generate → quality → (auto-deploy if enabled)
 /demo <company-name> | https://example.com — explicit website, then full pipeline
 /edit <company-name>: <request> — placeholder (NOT_IMPLEMENTED)
-/ops <company-name>: <action> — status | logs | restart | ssl
+/ops <company-name>: <action> — status | health | logs | restart | rollback | stop | start
 
-Not implemented yet:
-• deployment, restarts, SSL
-• public URL exposure`;
+Mutating ops actions (restart, rollback, stop, start) require confirmation:
+from Telegram you'll be asked to reply with "confirm=<token>" within 5 minutes;
+from the CLI, re-run with --yes.
+
+Deferred to CLI only (not available from chat): ssl, domain, deploy.`;
 
 export async function executeCommand(
   parsed: ParsedCommand,
   ctx: CommandContext,
+  opts?: ExecuteCommandOptions,
 ): Promise<CommandResult> {
+  const actor: CommandActor = opts?.actor ?? { channel: "cli" };
   switch (parsed.kind) {
     case "start":
       return { ok: true, message: INTRO };
@@ -66,11 +89,18 @@ export async function executeCommand(
     case "status":
       return handleStatus(parsed.target, parsed.targetType, ctx);
     case "demo":
-      return handleDemo(parsed.companyName, parsed.websiteHint, ctx);
+      return handleDemo(parsed.companyName, parsed.websiteHint, ctx, actor);
     case "edit":
       return handleEdit(parsed.companyName, parsed.request, ctx);
     case "ops":
-      return handleOps(parsed.companyName, parsed.action, ctx);
+      return handleOps(
+        parsed.companyName,
+        parsed.action,
+        parsed.confirmToken,
+        ctx,
+        actor,
+        opts?.skipConfirmation ?? false,
+      );
     case "unknown":
       return {
         ok: false,
@@ -156,6 +186,7 @@ async function handleDemo(
   companyName: string,
   websiteHint: string | undefined,
   ctx: CommandContext,
+  actor: CommandActor,
 ): Promise<CommandResult> {
   try {
     const result = await ctx.discovery.discover({
@@ -236,13 +267,26 @@ async function handleDemo(
       planning.knowledge.displayName,
     );
 
+    const deployMessage = await maybeAutoDeploy(
+      planning.knowledge.displayName,
+      quality.ok,
+      ctx,
+      actor,
+    );
+
     return {
       ok: generation.ok && quality.ok,
       jobId: quality.jobId ?? generation.jobId,
       companyId: generation.companyId,
-      message: [blueprint.message, "", generation.message, "", quality.message].join(
-        "\n",
-      ),
+      message: [
+        blueprint.message,
+        "",
+        generation.message,
+        "",
+        quality.message,
+        "",
+        deployMessage,
+      ].join("\n"),
     };
   } catch (error) {
     if (isAppError(error)) {
@@ -254,6 +298,41 @@ async function handleDemo(
     throw error;
   }
 }
+/**
+ * Best-effort auto-deploy after a successful /demo quality pass. Never
+ * throws — deployment/gate failures are reported as text, not as a broken
+ * /demo response, since generation itself already succeeded.
+ */
+async function maybeAutoDeploy(
+  companyName: string,
+  qualityOk: boolean,
+  ctx: CommandContext,
+  actor: CommandActor,
+): Promise<string> {
+  if (!qualityOk) {
+    return "Deployment skipped — quality gate did not pass.";
+  }
+  if (!ctx.config.demoAutoDeploy) {
+    return "The app is ready for deployment. Automatic deployment is disabled (DEMO_AUTO_DEPLOY=false); use the deployment CLI or /ops to deploy manually.";
+  }
+  const isAdmin =
+    actor.channel === "cli" ||
+    (actor.channel === "telegram" && isAdminTelegramUser(actor.telegramUserId, ctx.config));
+  if (!isAdmin) {
+    return "Automatic deployment is enabled but skipped: requester is not an authorized admin.";
+  }
+  try {
+    await ctx.deployment.predeploy(companyName);
+    const result = await ctx.deployment.deploy(companyName);
+    return formatDeploymentMessage({
+      companyDisplayName: companyName,
+      record: result.deployment.record,
+    });
+  } catch (error) {
+    return `Automatic deployment failed: ${toUserMessage(error)}`;
+  }
+}
+
 async function handleEdit(
   companyName: string,
   request: string,
@@ -298,44 +377,19 @@ async function handleEdit(
 async function handleOps(
   companyName: string,
   action: OpsAction,
+  confirmToken: string | undefined,
   ctx: CommandContext,
+  actor: CommandActor,
+  skipConfirmation: boolean,
 ): Promise<CommandResult> {
-  const resolved = await ctx.registry.resolveByName(companyName);
-
-  if (action === "status") {
-    const status = await formatCompanyStatus(resolved.company.id, ctx);
-    return {
-      ...status,
-      message: [`Ops status for ${resolved.company.displayName}`, status.message].join(
-        "\n\n",
-      ),
-    };
-  }
-
-  const job = await ctx.jobs.create({
-    type: "OPS",
-    companyId: resolved.company.id,
-    projectId: resolved.project.id,
-    currentStage: "not-implemented",
-    input: { action, companyName: resolved.company.displayName, phase: 1 },
+  const result = await ctx.operations.requestAction({
+    companyName,
+    action,
+    actor,
+    confirmToken,
+    skipConfirmation,
   });
-  await ctx.jobs.transition(job.id, "RUNNING");
-  const failed = await ctx.jobs.fail(job.id, {
-    code: "NOT_IMPLEMENTED",
-    message: `Ops action "${action}" is not implemented in Phase 1`,
-  });
-
-  return {
-    ok: false,
-    jobId: failed.id,
-    companyId: resolved.company.id,
-    message: [
-      `Ops action "${action}" is not implemented in Phase 1.`,
-      `jobId: ${failed.id}`,
-      `error: NOT_IMPLEMENTED`,
-      "No shell commands were executed.",
-    ].join("\n"),
-  };
+  return { ok: result.ok, message: result.message };
 }
 
 export function formatCommandError(error: unknown): string {

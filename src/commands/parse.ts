@@ -1,5 +1,10 @@
 import { AppError } from "../shared/errors.js";
 import { assertSafePublicUrlSync } from "../security/safe-url.js";
+import {
+  OPS_ACTIVE_ACTIONS,
+  OPS_DEFERRED_ACTIONS,
+  type OpsAction,
+} from "../operations/operations-types.js";
 
 export type ParsedCommand =
   | { kind: "start" }
@@ -7,11 +12,12 @@ export type ParsedCommand =
   | { kind: "status"; target: string; targetType: "job" | "company" | "unknown" }
   | { kind: "demo"; companyName: string; websiteHint?: string }
   | { kind: "edit"; companyName: string; request: string }
-  | { kind: "ops"; companyName: string; action: OpsAction }
+  | { kind: "ops"; companyName: string; action: OpsAction; confirmToken?: string }
   | { kind: "unknown"; raw: string };
 
-export const OPS_ACTIONS = ["status", "logs", "restart", "ssl"] as const;
-export type OpsAction = (typeof OPS_ACTIONS)[number];
+export type { OpsAction };
+/** All recognized `/ops` action names (active + deferred); see operations-types.ts. */
+export const OPS_ACTIONS = [...OPS_ACTIVE_ACTIONS, ...OPS_DEFERRED_ACTIONS] as const;
 
 const JOB_ID_RE = /^job_[0-9a-f-]{36}$/i;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -130,14 +136,20 @@ export function parseCommand(text: string): ParsedCommand {
   const opsRest = stripCommand(raw, "ops");
   if (opsRest !== null) {
     const { companyName, request } = splitCompanyRequest(opsRest);
-    const action = request.toLowerCase() as OpsAction;
+    const tokens = request.trim().split(/\s+/).filter(Boolean);
+    const action = (tokens[0] ?? "").toLowerCase() as OpsAction;
     if (!OPS_ACTIONS.includes(action)) {
       throw new AppError(
         "VALIDATION_ERROR",
-        `Unsupported ops action "${request}". Allowed: ${OPS_ACTIONS.join(", ")}`,
+        `Unsupported ops action "${tokens[0] ?? ""}". Allowed: ${OPS_ACTIONS.join(", ")}`,
       );
     }
-    return { kind: "ops", companyName, action };
+    let confirmToken: string | undefined;
+    for (const token of tokens.slice(1)) {
+      const match = /^confirm=(.+)$/i.exec(token);
+      if (match?.[1]) confirmToken = match[1];
+    }
+    return { kind: "ops", companyName, action, ...(confirmToken ? { confirmToken } : {}) };
   }
 
   return { kind: "unknown", raw };

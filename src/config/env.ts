@@ -34,6 +34,18 @@ const ConfigSchema = z.object({
   DISCOVERY_SYNTHESIS_PROVIDER: z
     .enum(["deterministic", "codex", "auto", ""])
     .default("auto"),
+  DEMO_AUTO_DEPLOY: z.enum(["true", "false"]).default("false"),
+  TELEGRAM_ADMIN_IDS: z.string().default(""),
+  DEPLOYMENT_PORT_MIN: z.coerce.number().int().positive().default(3100),
+  DEPLOYMENT_PORT_MAX: z.coerce.number().int().positive().default(3999),
+  DEPLOYMENT_BIND_ADDRESS: z.string().default("127.0.0.1"),
+  DEPLOYMENT_PUBLIC_ENABLED: z.enum(["true", "false"]).default("false"),
+  DEPLOYMENT_BASE_DOMAIN: z.string().default(""),
+  DEPLOYMENT_DOMAIN_PATTERN: z.string().default(""),
+  NGINX_CONFIG_ROOT: z.string().default(""),
+  SSL_PROVIDER: z.enum(["", "CERTBOT", "EXTERNAL"]).default(""),
+  CERTBOT_EMAIL: z.string().default(""),
+  DEPLOYMENT_ACCEPT_NEXT_HIGH_LOOPBACK: z.enum(["true", "false"]).default("true"),
 });
 
 export type AppConfig = {
@@ -64,6 +76,20 @@ export type AppConfig = {
     model: string | undefined;
     discoveryTimeoutMs: number;
   };
+  demoAutoDeploy: boolean;
+  telegramAdminIds: number[];
+  deployment: {
+    portMin: number;
+    portMax: number;
+    bindAddress: "127.0.0.1";
+    publicEnabled: boolean;
+    baseDomain: string;
+    domainPattern: string;
+    nginxConfigRoot: string;
+    sslProvider: "" | "CERTBOT" | "EXTERNAL";
+    certbotEmail: string;
+    acceptNextHighLoopback: boolean;
+  };
 };
 
 export type ConfigInput = Record<string, string | undefined>;
@@ -80,6 +106,16 @@ function resolveSearchProvider(
   if (tavilyKey) return "tavily";
   if (serperKey) return "serper";
   return "none";
+}
+
+/** Parse a comma-separated list of numeric Telegram user ids. Non-digit entries are ignored. */
+export function parseTelegramAdminIds(raw: string): number[] {
+  return raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => /^\d+$/.test(s))
+    .map((s) => Number(s))
+    .filter((n) => Number.isSafeInteger(n) && n > 0);
 }
 
 export function loadConfig(
@@ -108,6 +144,19 @@ export function loadConfig(
     CODEX_MODEL: raw.CODEX_MODEL ?? "",
     CODEX_DISCOVERY_TIMEOUT_MS: raw.CODEX_DISCOVERY_TIMEOUT_MS ?? "180000",
     DISCOVERY_SYNTHESIS_PROVIDER: raw.DISCOVERY_SYNTHESIS_PROVIDER ?? "auto",
+    DEMO_AUTO_DEPLOY: raw.DEMO_AUTO_DEPLOY ?? "false",
+    TELEGRAM_ADMIN_IDS: raw.TELEGRAM_ADMIN_IDS ?? "",
+    DEPLOYMENT_PORT_MIN: raw.DEPLOYMENT_PORT_MIN ?? "3100",
+    DEPLOYMENT_PORT_MAX: raw.DEPLOYMENT_PORT_MAX ?? "3999",
+    DEPLOYMENT_BIND_ADDRESS: raw.DEPLOYMENT_BIND_ADDRESS ?? "127.0.0.1",
+    DEPLOYMENT_PUBLIC_ENABLED: raw.DEPLOYMENT_PUBLIC_ENABLED ?? "false",
+    DEPLOYMENT_BASE_DOMAIN: raw.DEPLOYMENT_BASE_DOMAIN ?? "",
+    DEPLOYMENT_DOMAIN_PATTERN: raw.DEPLOYMENT_DOMAIN_PATTERN ?? "",
+    NGINX_CONFIG_ROOT: raw.NGINX_CONFIG_ROOT ?? "",
+    SSL_PROVIDER: raw.SSL_PROVIDER ?? "",
+    CERTBOT_EMAIL: raw.CERTBOT_EMAIL ?? "",
+    DEPLOYMENT_ACCEPT_NEXT_HIGH_LOOPBACK:
+      raw.DEPLOYMENT_ACCEPT_NEXT_HIGH_LOOPBACK ?? "true",
   });
 
   if (!parsed.success) {
@@ -127,6 +176,19 @@ export function loadConfig(
     !/^\d+:[A-Za-z0-9_-]+$/.test(parsed.data.TELEGRAM_BOT_TOKEN)
   ) {
     throw new AppError("CONFIGURATION_ERROR", "TELEGRAM_BOT_TOKEN format is invalid");
+  }
+
+  if (parsed.data.DEPLOYMENT_BIND_ADDRESS !== "127.0.0.1") {
+    throw new AppError(
+      "CONFIGURATION_ERROR",
+      'DEPLOYMENT_BIND_ADDRESS must be "127.0.0.1" — deployments never bind 0.0.0.0 or other interfaces',
+    );
+  }
+  if (parsed.data.DEPLOYMENT_PORT_MIN >= parsed.data.DEPLOYMENT_PORT_MAX) {
+    throw new AppError(
+      "CONFIGURATION_ERROR",
+      "DEPLOYMENT_PORT_MIN must be less than DEPLOYMENT_PORT_MAX",
+    );
   }
 
   const dataRoot = normalizeRoot(parsed.data.DATA_ROOT, cwd);
@@ -171,6 +233,21 @@ export function loadConfig(
       model: parsed.data.CODEX_MODEL.trim() || undefined,
       discoveryTimeoutMs: parsed.data.CODEX_DISCOVERY_TIMEOUT_MS,
     },
+    demoAutoDeploy: parsed.data.DEMO_AUTO_DEPLOY === "true",
+    telegramAdminIds: parseTelegramAdminIds(parsed.data.TELEGRAM_ADMIN_IDS),
+    deployment: {
+      portMin: parsed.data.DEPLOYMENT_PORT_MIN,
+      portMax: parsed.data.DEPLOYMENT_PORT_MAX,
+      bindAddress: "127.0.0.1",
+      publicEnabled: parsed.data.DEPLOYMENT_PUBLIC_ENABLED === "true",
+      baseDomain: parsed.data.DEPLOYMENT_BASE_DOMAIN,
+      domainPattern: parsed.data.DEPLOYMENT_DOMAIN_PATTERN,
+      nginxConfigRoot: parsed.data.NGINX_CONFIG_ROOT,
+      sslProvider: parsed.data.SSL_PROVIDER,
+      certbotEmail: parsed.data.CERTBOT_EMAIL,
+      acceptNextHighLoopback:
+        parsed.data.DEPLOYMENT_ACCEPT_NEXT_HIGH_LOOPBACK === "true",
+    },
   };
 }
 
@@ -190,5 +267,18 @@ export function publicConfigView(config: AppConfig): Record<string, unknown> {
     tavilyConfigured: Boolean(config.discovery.tavilyApiKey),
     serperConfigured: Boolean(config.discovery.serperApiKey),
     codexModelConfigured: Boolean(config.codex.model),
+    demoAutoDeploy: config.demoAutoDeploy,
+    telegramAdminCount: config.telegramAdminIds.length,
+    deployment: {
+      portRange: `${config.deployment.portMin}-${config.deployment.portMax}`,
+      bindAddress: config.deployment.bindAddress,
+      publicEnabled: config.deployment.publicEnabled,
+      baseDomainConfigured: Boolean(config.deployment.baseDomain),
+      domainPatternConfigured: Boolean(config.deployment.domainPattern),
+      nginxConfigRootConfigured: Boolean(config.deployment.nginxConfigRoot),
+      sslProvider: config.deployment.sslProvider || "none",
+      certbotEmailConfigured: Boolean(config.deployment.certbotEmail),
+      acceptNextHighLoopback: config.deployment.acceptNextHighLoopback,
+    },
   };
 }

@@ -1,4 +1,4 @@
-# Architecture — Phase 0–5
+# Architecture — Phase 0–6
 
 Modular monolith. Telegram is an adapter only.
 
@@ -17,11 +17,30 @@ telegram/commands
                                               quality auditors → score → repair staging
                                                                         ↓
                                               acceptance → quality artifacts
+                                                                        ↓
+                                              pre-deployment gate (audit + browser QA)
+                                                                        ↓
+                                              blue/green deploy (pm2, 127.0.0.1) → health
+                                                                        ↓
+                                              /ops + deployment:* CLIs (status/health/logs/
+                                              restart/rollback/stop/start)
                                          ↓
                                    persistence / data/
 ```
 
-Phase 5 audits and repairs a generated application in an isolated release workflow. It does not deploy or expose the application publicly.
+Phase 6 deploys a quality-accepted release to a local port and exposes operator-facing lifecycle commands. Public exposure (custom domain + TLS) remains a manual, explicit opt-in.
+
+## Phase 6 modules
+
+| Module | Responsibility |
+|--------|----------------|
+| `deployment/` | Pre-deployment gate, dependency audit, advisory policy, port allocator, deployment lock, plan/record schemas, repository, manifest, health verifier, blue/green orchestrator, rollback, service façade |
+| `deployment/providers/` | `DeploymentProvider` interface; `Pm2DeploymentProvider` (production) |
+| `deployment/proxy/` + `deployment/ssl/` | Nginx reverse-proxy stub + Certbot/External SSL stub — both require explicit configuration before public exposure is possible |
+| `operations/` | `/ops` action types, authorization policy (CLI trusted, Telegram admin allowlist), audit trail, confirmation-token service |
+| `app/predeploy-cli.ts`, `app/deploy-cli.ts`, `app/deployment-ops-cli.ts` | Service-level deployment/operations CLIs |
+
+See [DEPLOYMENT](./DEPLOYMENT.md) and [OPERATIONS](./OPERATIONS.md).
 
 ## Phase 5 modules
 
@@ -40,7 +59,7 @@ Phase 5 audits and repairs a generated application in an isolated release workfl
 | `generation/` | Plan, template copy, providers, mock data, validators, build, promote |
 | `generation/providers/` | Deterministic template provider (default); Codex CLI optional |
 | `app/generate-cli.ts` | Service-level generation CLI |
-| `templates/generated-company-os-v1` | Approved Next.js 14.2 / Node 18 application shell |
+| `templates/generated-company-os-v2` | Approved Next.js 14.2 / Node 18 application shell (includes `/api/health`) |
 | `templates/machine-demo` | Preserved legacy demo template (not the Phase 4 shell) |
 
 ## Phase 3 modules (still active)

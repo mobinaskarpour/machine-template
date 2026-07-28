@@ -57,7 +57,29 @@ export type ErrorCode =
   | "QUALITY_AUDIT_FAILED"
   | "QUALITY_REPAIR_FAILED"
   | "QUALITY_ACCEPTANCE_FAILED"
-  | "QUALITY_RUNTIME_FAILED";
+  | "QUALITY_RUNTIME_FAILED"
+  | "PREDEPLOY_GENERATION_NOT_ACCEPTED"
+  | "PREDEPLOY_QUALITY_NOT_ACCEPTED"
+  | "PREDEPLOY_SOURCE_MISMATCH"
+  | "PREDEPLOY_DEPENDENCY_BLOCKER"
+  | "PREDEPLOY_BROWSER_QA_REQUIRED"
+  | "PREDEPLOY_BUILD_FAILED"
+  | "PREDEPLOY_SECURITY_FAILED"
+  | "PREDEPLOY_RELEASE_NOT_IMMUTABLE"
+  | "PREDEPLOY_GATE_FAILED"
+  | "DEPLOYMENT_FAILED"
+  | "DEPLOYMENT_NOT_FOUND"
+  | "DEPLOYMENT_LOCK_HELD"
+  | "DEPLOYMENT_PORT_EXHAUSTED"
+  | "DEPLOYMENT_HEALTH_FAILED"
+  | "DEPLOYMENT_PLAN_INVALID"
+  | "DEPLOYMENT_PUBLIC_NOT_CONFIGURED"
+  | "PM2_NOT_AVAILABLE"
+  | "PM2_PROCESS_FAILED"
+  | "OPS_UNAUTHORIZED"
+  | "OPS_CONFIRMATION_REQUIRED"
+  | "OPS_CONFIRMATION_INVALID"
+  | "OPS_ACTION_NOT_ALLOWED";
 
 export class AppError extends Error {
   readonly code: ErrorCode;
@@ -134,6 +156,28 @@ const DISCOVERY_USER_MESSAGES: Partial<Record<ErrorCode, string>> = {
   QUALITY_REPAIR_FAILED: "Quality repair failed.",
   QUALITY_ACCEPTANCE_FAILED: "Quality acceptance gate rejected the release.",
   QUALITY_RUNTIME_FAILED: "Local quality runtime failed.",
+  PREDEPLOY_GENERATION_NOT_ACCEPTED: "No accepted generation is available to deploy.",
+  PREDEPLOY_QUALITY_NOT_ACCEPTED: "Quality gate has not accepted this release yet.",
+  PREDEPLOY_SOURCE_MISMATCH: "Source hashes do not match; regenerate before deploying.",
+  PREDEPLOY_DEPENDENCY_BLOCKER: "Dependency audit found blocking advisories.",
+  PREDEPLOY_BROWSER_QA_REQUIRED: "Browser QA is required for public deployment and did not pass.",
+  PREDEPLOY_BUILD_FAILED: "Release build verification failed.",
+  PREDEPLOY_SECURITY_FAILED: "Release failed the security scan.",
+  PREDEPLOY_RELEASE_NOT_IMMUTABLE: "Release artifact is not immutable or is missing.",
+  PREDEPLOY_GATE_FAILED: "Pre-deployment gate did not pass.",
+  DEPLOYMENT_FAILED: "Deployment failed.",
+  DEPLOYMENT_NOT_FOUND: "No deployment was found for this company.",
+  DEPLOYMENT_LOCK_HELD: "A deployment is already in progress for this company.",
+  DEPLOYMENT_PORT_EXHAUSTED: "No free deployment port is available.",
+  DEPLOYMENT_HEALTH_FAILED: "The deployed application did not pass health checks.",
+  DEPLOYMENT_PLAN_INVALID: "Deployment plan is invalid.",
+  DEPLOYMENT_PUBLIC_NOT_CONFIGURED: "Public exposure is not configured on this server.",
+  PM2_NOT_AVAILABLE: "Process supervisor (pm2) is not available.",
+  PM2_PROCESS_FAILED: "Process supervisor command failed.",
+  OPS_UNAUTHORIZED: "You are not authorized to run operations commands.",
+  OPS_CONFIRMATION_REQUIRED: "This action requires confirmation before it will run.",
+  OPS_CONFIRMATION_INVALID: "Confirmation token is invalid, expired, or already used.",
+  OPS_ACTION_NOT_ALLOWED: "That operations action is not available from this channel.",
 };
 
 export function toUserMessage(error: unknown): string {

@@ -18,15 +18,15 @@ export function createTelegramBot(
   const bot = new Telegraf(token);
 
   bot.start(async (telegramCtx) => {
-    await dispatch(telegramCtx.message.text ?? "/start", telegramCtx, ctx, logger);
+    await dispatch(telegramCtx.message.text ?? "/start", telegramCtx, ctx, logger, telegramCtx.from?.id);
   });
 
   bot.help(async (telegramCtx) => {
-    await dispatch("/help", telegramCtx, ctx, logger);
+    await dispatch("/help", telegramCtx, ctx, logger, telegramCtx.from?.id);
   });
 
   bot.on("text", async (telegramCtx) => {
-    await dispatch(telegramCtx.message.text, telegramCtx, ctx, logger);
+    await dispatch(telegramCtx.message.text, telegramCtx, ctx, logger, telegramCtx.from?.id);
   });
 
   bot.catch((error: unknown) => {
@@ -44,11 +44,14 @@ async function dispatch(
   telegramCtx: { reply: (msg: string) => Promise<unknown> },
   ctx: CommandContext,
   logger: Logger,
+  telegramUserId: number | undefined,
 ): Promise<void> {
   try {
     const parsed = parseCommand(text);
     logger.info({ command: parsed.kind }, "telegram.command");
-    const result = await executeCommand(parsed, ctx);
+    const result = await executeCommand(parsed, ctx, {
+      actor: { channel: "telegram", telegramUserId },
+    });
     await telegramCtx.reply(result.message);
   } catch (error) {
     const safe = formatCommandError(error);

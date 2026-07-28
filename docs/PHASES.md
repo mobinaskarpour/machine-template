@@ -32,7 +32,7 @@ Phase 3 generates an implementation-ready Company OS Blueprint. Application sour
 Implemented:
 
 - Generation plan from a ready Company OS Blueprint
-- Approved template copy (`templates/generated-company-os-v1`, Next 14.2 / Node 18)
+- Approved template copy (`templates/generated-company-os-v2`, Next 14.2 / Node 18)
 - DeterministicTemplateProvider (default) renders runtime JSON, mock data, and branding
 - Source / dependency / route / coverage / mock-data validation
 - Local install → typecheck → test → production build via SafeCommandRunner
@@ -59,8 +59,17 @@ Implemented:
 
 Phase 5 audits and repairs a generated application in an isolated release workflow. It does not deploy or expose the application publicly.
 
-## Phase 6 — Deployment and public exposure (next)
+## Phase 6 — Deployment and operations (current)
 
-Not started.
+Implemented:
 
-Public deployment via PM2 (or equivalent process supervision), TLS, ops restart, and exposing a generated Company OS on a public URL.
+- Pre-deployment gate: accepted generation + quality, matching source hashes, build/security pass, production `npm audit`, multi-viewport browser QA (`predeploy-cli.ts`, `npm run deployment:gate`)
+- Blue/green deployment via PM2, bound to `127.0.0.1` only, with a persistent per-company port allocator and per-company deployment lock (`deploy-cli.ts`, `npm run deploy`)
+- Full health verification (pm2 status, port reachability, `/api/health` identity match, main page + one app route, restart-count stability, sanitized logs)
+- Rollback to the most recent previous healthy deployment whose release still exists on disk
+- `/ops` command + `deployment:*` CLIs: `status`, `health`, `logs`, `restart`, `rollback`, `stop`, `start` — mutating actions require confirmation (Telegram: reply with a short-lived token; CLI: `--yes`)
+- Telegram operations are restricted to `TELEGRAM_ADMIN_IDS`; `ssl`, `domain`, and `deploy` are deferred to the CLI only
+- Optional `DEMO_AUTO_DEPLOY` auto-deploys a `/demo` result when the requester is an authorized admin and the pre-deployment gate passes
+- Public exposure (custom domain + TLS) is a manual, explicitly-configured opt-in (nginx + Certbot/External SSL provider stubs) — never enabled by default
+
+Phase 6 deploys a quality-accepted release to a local port. Public exposure still requires an operator to configure a reverse proxy, a domain pattern, and a TLS provider.

@@ -27,6 +27,8 @@ import { FsCompanyOSBlueprintRepository } from "../blueprints/company-os-bluepri
 import { CompanyBlueprintPlanningService } from "../blueprints/company-blueprint-planning-service.js";
 import { ApplicationGenerationService } from "../generation/application-generation-service.js";
 import { QualityIterationService } from "../quality/quality-iteration-service.js";
+import { DeploymentService } from "../deployment/deployment-service.js";
+import { OperationsService } from "../operations/operations-service.js";
 import { mkdir } from "node:fs/promises";
 
 export type AppServices = {
@@ -46,6 +48,8 @@ export type AppServices = {
   blueprint: CompanyBlueprintPlanningService;
   generation: ApplicationGenerationService;
   quality: QualityIterationService;
+  deployment: DeploymentService;
+  operations: OperationsService;
   commandContext: CommandContext;
 };
 
@@ -58,6 +62,8 @@ export async function createAppServices(
     synthesis?: KnowledgeSynthesisProvider;
     generation?: ApplicationGenerationService;
     quality?: QualityIterationService;
+    deployment?: DeploymentService;
+    operations?: OperationsService;
   },
 ): Promise<AppServices> {
   await mkdir(config.dataRoot, { recursive: true });
@@ -69,9 +75,13 @@ export async function createAppServices(
   const memorySpecsDir = resolve(config.dataRoot, "memory", "specifications");
   const memoryBlueprintsDir = resolve(config.dataRoot, "memory", "blueprints");
   const memoryQualityDir = resolve(config.dataRoot, "memory", "quality");
+  const memoryDeploymentsDir = resolve(config.dataRoot, "memory", "deployments");
+  const memoryPortsDir = resolve(config.dataRoot, "memory", "ports");
   await mkdir(memorySpecsDir, { recursive: true });
   await mkdir(memoryBlueprintsDir, { recursive: true });
   await mkdir(memoryQualityDir, { recursive: true });
+  await mkdir(memoryDeploymentsDir, { recursive: true });
+  await mkdir(memoryPortsDir, { recursive: true });
   await mkdir(resolve(config.dataRoot, "projects-meta"), { recursive: true });
 
   const companies = new FsCompanyRepository(config.companiesDir);
@@ -171,18 +181,47 @@ export async function createAppServices(
       memoryQualityDir,
     });
 
+  const deployment =
+    overrides?.deployment ??
+    new DeploymentService({
+      cwd: process.cwd(),
+      projectsRoot: config.projectsRoot,
+      memoryQualityDir,
+      memoryDeploymentsDir,
+      portAllocationsPath: resolve(memoryPortsDir, "allocations.json"),
+      registry,
+      blueprints,
+      runner,
+      logger,
+      config,
+    });
+
+  const operations =
+    overrides?.operations ??
+    new OperationsService({
+      deployment,
+      registry,
+      config,
+      projectsRoot: config.projectsRoot,
+      confirmationsPath: resolve(config.dataRoot, "memory", "ops-confirmations.json"),
+      logger,
+    });
+
   const commandContext: CommandContext = {
     registry,
     jobs: jobManager,
     companies,
     jobRepo: jobs,
     logger,
+    config,
     discovery,
     knowledge,
     planning,
     blueprint,
     generation,
     quality,
+    deployment,
+    operations,
   };
 
   return {
@@ -202,6 +241,8 @@ export async function createAppServices(
     blueprint,
     generation,
     quality,
+    deployment,
+    operations,
     commandContext,
   };
 }

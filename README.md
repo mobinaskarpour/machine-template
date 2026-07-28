@@ -1,26 +1,28 @@
 # THE MACHINE — Autonomous AI Company OS Builder
 
-Phase 5: Company Discovery → Planning → Blueprint → Generation → **Quality iteration** (audit + isolated repair, no deploy).
+Phase 6: Company Discovery → Planning → Blueprint → Generation → Quality iteration → **Deployment and operations** (local PM2 deploy, health checks, `/ops`).
 
-Phase 5 audits and repairs a generated application in an isolated release workflow. It does not deploy or expose the application publicly.
+Phase 6 deploys a quality-accepted release to a local port under process supervision. Public exposure (custom domain + TLS) remains a manual, explicitly-configured opt-in — never automatic.
 
 ## What works now
 
-- `/demo` pipeline through blueprint, application generation, and quality iteration (when the blueprint is ready)
+- `/demo` pipeline through blueprint, application generation, quality iteration, and (when `DEMO_AUTO_DEPLOY=true` and the requester is an admin) automatic deployment
 - Industry Engine + MasterBuildSpecification + Master Prompt + Company OS Blueprint
-- Deterministic application generation from `templates/generated-company-os-v1` (Next.js 14.2 / Node 18)
+- Deterministic application generation from `templates/generated-company-os-v2` (Next.js 14.2 / Node 18)
 - Generation plan, mock data, validation, security scan, and release promotion
 - Quality auditors, scoring, acceptance gates, deterministic repair staging, loopback-only local QA
-- CLIs: `discover`, `plan`, `blueprint`, `generate`, `quality`, `migrate:slug --dry-run`
+- Pre-deployment gate (dependency audit + multi-viewport browser QA), blue/green deployment via pm2, full health verification, and rollback — all bound to `127.0.0.1`
+- `/ops` command + `deployment:*` CLIs for `status`, `health`, `logs`, `restart`, `rollback`, `stop`, `start`, with Telegram admin authorization + confirmation tokens
+- CLIs: `discover`, `plan`, `blueprint`, `generate`, `quality`, `deployment:gate`, `deploy`, `deployment:status|health|logs|restart|rollback|stop|start`, `migrate:slug --dry-run`
 
 ## Templates
 
 - `templates/machine-demo` — preserved legacy demo shell
-- `templates/generated-company-os-v1` — Company OS application shell (Next 14.2 / Node 18)
+- `templates/generated-company-os-v2` — Company OS application shell (Next 14.2 / Node 18, includes `/api/health`)
 
 ## Not implemented yet
 
-Public deployment (Phase 6 / PM2), SSL, ops restart, executable agents, `/edit` execution, and exposing generated apps on a public URL.
+Public exposure (reverse proxy config generation + TLS issuance are stub providers only), executable agents, and `/edit` execution.
 
 ## Setup
 
@@ -40,6 +42,9 @@ npm run plan -- "زر ماکارون"
 npm run blueprint -- "زر ماکارون"
 npm run generate -- "زر ماکارون"
 npm run quality -- "زر ماکارون"
+npm run deployment:gate -- "زر ماکارون"
+npm run deploy -- "زر ماکارون"
+npm run deployment:status -- "زر ماکارون"
 npm run migrate:slug -- --dry-run "زر ماکارون"
 ```
 
@@ -47,6 +52,8 @@ npm run migrate:slug -- --dry-run "زر ماکارون"
 
 - [ARCHITECTURE](docs/ARCHITECTURE.md)
 - [PHASES](docs/PHASES.md)
+- [DEPLOYMENT](docs/DEPLOYMENT.md)
+- [OPERATIONS](docs/OPERATIONS.md)
 - [QUALITY-ITERATION](docs/QUALITY-ITERATION.md)
 - [QUALITY-SCORING](docs/QUALITY-SCORING.md)
 - [QUALITY-AUDITORS](docs/QUALITY-AUDITORS.md)

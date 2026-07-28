@@ -8,7 +8,7 @@ Phase 4 generates and build-verifies an application release. It does not deploy 
 
 `DeterministicTemplateProvider` — Phase 4 success path.
 
-Assumes `templates/generated-company-os-v1` was copied into staging. Writes:
+Assumes `templates/generated-company-os-v2` was copied into staging. Writes:
 
 - `src/data/blueprint-runtime.json` — navigation, dashboards, modules, workflows, agents, roles, entities
 - `src/data/mock-data.json` — seeded mock records

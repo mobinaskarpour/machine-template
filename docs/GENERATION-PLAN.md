@@ -8,7 +8,7 @@ Phase 4 generates and build-verifies an application release. It does not deploy 
 
 - `generationId` — stable id derived from slug + blueprint hash + template hash
 - `sourceHashes` — company knowledge, MasterBuildSpecification, Master Prompt, Company OS Blueprint
-- `template` — id/version/path/contentHash for `generated-company-os-v1`
+- `template` — id/version/path/contentHash for `generated-company-os-v2`
 - `provider` — e.g. `DETERMINISTIC_TEMPLATE`
 - `application` — framework (Next.js), TypeScript, RTL / language flags
 - `tasks` — ordered graph (`COPY_TEMPLATE` → render steps → mock data → validate → install → typecheck → test → build)

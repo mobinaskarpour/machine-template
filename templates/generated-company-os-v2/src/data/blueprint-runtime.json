@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0",
+  "company": {
+    "displayName": "Demo Company",
+    "slug": "demo-company",
+    "description": "Placeholder — replaced during generation",
+    "industryPackId": "general",
+    "language": "en",
+    "rtl": false,
+    "officialWebsite": null
+  },
+  "navigation": {
+    "primary": [{ "id": "nav-overview", "label": "Overview", "route": "/" }],
+    "utility": [{ "id": "nav-settings", "label": "Settings", "route": "/settings" }]
+  },
+  "dashboards": [
+    {
+      "id": "dash-demo",
+      "name": "Executive",
+      "route": "/dashboards/dash-demo",
+      "purpose": "Demo dashboard",
+      "priority": "HIGH",
+      "layout": {
+        "columns": 12,
+        "sections": [{ "id": "sec-main", "title": "Main", "order": 1 }]
+      },
+      "widgets": [
+        {
+          "id": "w-kpi-1",
+          "type": "KPI_CARD",
+          "title": "Orders",
+          "description": "Open orders",
+          "sectionId": "sec-main",
+          "kpiIds": ["kpi_orders"],
+          "dataEntityIds": ["ent-sales-order"]
+        }
+      ]
+    }
+  ],
+  "modules": [
+    {
+      "id": "mod-demo",
+      "name": "Operations",
+      "description": "Demo module",
+      "routePrefix": "/modules/mod-demo",
+      "priority": "HIGH",
+      "pages": [
+        {
+          "id": "page-list",
+          "name": "List",
+          "route": "/modules/mod-demo",
+          "type": "LIST"
+        }
+      ]
+    }
+  ],
+  "workflows": [
+    {
+      "id": "wf-demo",
+      "name": "Demo workflow",
+      "purpose": "Illustrative flow",
+      "priority": "HIGH",
+      "trigger": { "type": "MANUAL", "description": "Manual start" },
+      "stages": [],
+      "states": ["DRAFT", "DONE"],
+      "transitions": [{ "from": "DRAFT", "to": "DONE", "action": "complete", "requiredPermissionIds": [], "requiresApproval": false }],
+      "auditRequired": true
+    }
+  ],
+  "agents": [
+    {
+      "id": "agent-demo",
+      "name": "Demo assistant",
+      "mission": "Suggest insights only",
+      "department": "Operations",
+      "executionMode": "SUGGEST",
+      "approvalBoundary": "Human approval required before any operational change",
+      "inputs": [{ "sourceType": "MOCK", "description": "Mock KPIs" }],
+      "outputs": [{ "type": "INSIGHT", "description": "Narrative insight" }],
+      "prohibitedActions": ["execute", "deploy", "mutate-production", "exfiltrate"],
+      "tools": [{ "id": "read-kpis", "name": "Read KPIs", "readOnly": true }]
+    }
+  ],
+  "roles": [{ "id": "role-viewer", "name": "Viewer", "scope": "VIEWER" }],
+  "entities": [{ "id": "ent-sales-order", "name": "Sales Order" }],
+  "assumptions": ["Demo data is synthetic"],
+  "unresolvedQuestions": [
+    {
+      "id": "q-demo",
+      "question": "Confirm currency",
+      "blocking": false
+    }
+  ],
+  "demo": {
+    "authLabel": "Demo access and role simulation only",
+    "currencyAssumption": "Demo currency formatting uses IRR labels unless confirmed",
+    "calendarAssumption": "Demo dates use ISO Gregorian display unless confirmed"
+  },
+  "brandCssVars": {
+    "brand": "#1b4d3e",
+    "brandForeground": "#f7f4ef",
+    "brandMuted": "#e8efe9"
+  }
+}

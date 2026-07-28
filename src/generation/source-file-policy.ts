@@ -1,6 +1,6 @@
-export const TEMPLATE_ID = "generated-company-os-v1";
-export const TEMPLATE_VERSION = "1.0.0";
-export const TEMPLATE_RELATIVE_PATH = "templates/generated-company-os-v1";
+export const TEMPLATE_ID = "generated-company-os-v2";
+export const TEMPLATE_VERSION = "2.0.0";
+export const TEMPLATE_RELATIVE_PATH = "templates/generated-company-os-v2";
 
 export const ALLOWED_DEPENDENCIES = [
   "next",

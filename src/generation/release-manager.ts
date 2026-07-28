@@ -87,7 +87,7 @@ export async function promoteStagingToRelease(input: {
   blueprintHash: string;
   retainLastN?: number;
 }): Promise<CurrentGenerationPointer> {
-  const retainLastN = Math.max(3, input.retainLastN ?? 3);
+  const retainLastN = Math.max(5, input.retainLastN ?? 10);
   const slug = assertSafeSlug(input.slug);
   const workspace = new GenerationWorkspace(input.projectsRoot);
   const paths = await workspace.ensureDirs(slug, { generationId: input.generationId });

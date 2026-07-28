@@ -2,7 +2,7 @@
   "name": "the-machine",
   "version": "0.1.0",
   "private": true,
-  "description": "THE MACHINE — Autonomous AI Company OS Builder (Phase 5 quality iteration)",
+  "description": "THE MACHINE — Autonomous AI Company OS Builder (Phase 6 deployment/operations)",
   "type": "module",
   "engines": {
     "node": ">=18.18.0"
@@ -20,7 +20,16 @@
     "blueprint": "tsx src/app/blueprint-cli.ts",
     "generate": "tsx src/app/generate-cli.ts",
     "quality": "tsx src/app/quality-cli.ts",
-    "migrate:slug": "tsx src/app/migrate-slug-cli.ts"
+    "migrate:slug": "tsx src/app/migrate-slug-cli.ts",
+    "deployment:gate": "tsx src/app/predeploy-cli.ts",
+    "deploy": "tsx src/app/deploy-cli.ts",
+    "deployment:status": "tsx src/app/deployment-ops-cli.ts status",
+    "deployment:health": "tsx src/app/deployment-ops-cli.ts health",
+    "deployment:logs": "tsx src/app/deployment-ops-cli.ts logs",
+    "deployment:restart": "tsx src/app/deployment-ops-cli.ts restart",
+    "deployment:rollback": "tsx src/app/deployment-ops-cli.ts rollback",
+    "deployment:stop": "tsx src/app/deployment-ops-cli.ts stop",
+    "deployment:start": "tsx src/app/deployment-ops-cli.ts start"
   },
   "dependencies": {
     "dotenv": "^16.6.1",
@@ -30,6 +39,8 @@
   },
   "devDependencies": {
     "@types/node": "^20.19.9",
+    "playwright": "^1.49.1",
+    "pm2": "^5.4.3",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"

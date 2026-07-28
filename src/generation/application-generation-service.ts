@@ -436,6 +436,20 @@ export class ApplicationGenerationService {
       return null;
     }
 
+    // Template security upgrades (e.g. v1 → v2) must invalidate reuse even when
+    // the Blueprint hash is unchanged. Never mutate an immutable prior release.
+    try {
+      const currentTemplateHash = await hashTemplate(this.deps.cwd);
+      if (
+        manifest.sourceHashes?.templateHash &&
+        manifest.sourceHashes.templateHash !== currentTemplateHash
+      ) {
+        return null;
+      }
+    } catch {
+      return null;
+    }
+
     const job = await this.deps.jobs.create({
       type: "GENERATION",
       companyId,

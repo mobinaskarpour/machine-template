@@ -43,4 +43,4 @@ Matching `blueprintHash` + `PROMOTED` manifest → reuse without rebuild when `f
 
 ## Quality follow-on (Phase 5)
 
-Accepted quality runs may promote a repaired staging tree as a new generation while retaining prior releases under the same retention policy. Repair staging lives under `generated/staging/quality-<runId>/app/` and never mutates the source release during repair. Phase 5 does not deploy or expose the application publicly. See [QUALITY-ITERATION](./QUALITY-ITERATION.md) and [QUALITY-ARTIFACTS](./QUALITY-ARTIFACTS.md).
+Accepted quality runs may promote a repaired staging tree as a new generation while retaining prior releases under the same retention policy. Repair staging lives under `generated/staging/quality-<runId>/app/` and never mutates the source release during repair. Phase 5 quality acceptance does not deploy. Phase 6 may deploy via PM2 after the pre-deployment gate passes. See [PREDEPLOYMENT-GATE](./PREDEPLOYMENT-GATE.md). See [QUALITY-ITERATION](./QUALITY-ITERATION.md) and [QUALITY-ARTIFACTS](./QUALITY-ARTIFACTS.md).

@@ -239,7 +239,7 @@ describe("command handlers", () => {
     expect(job.error?.code).toBe("NOT_IMPLEMENTED");
   });
 
-  it("ops allowlist: status works; logs returns NOT_IMPLEMENTED", async () => {
+  it("ops allowlist: deployment actions report cleanly for a never-deployed company", async () => {
     const root = await tempRoot();
     const context = await ctx(root);
     // create company via edit path resolve
@@ -248,19 +248,27 @@ describe("command handlers", () => {
       context,
     );
 
+    // "status" and "logs" are implemented (Phase 6), but Acme has never been
+    // deployed, so both report a clean "no deployment" failure rather than
+    // throwing or hanging.
     const status = await executeCommand(
       { kind: "ops", companyName: "Acme", action: "status" },
       context,
     );
-    expect(status.ok).toBe(true);
-    expect(status.message).toContain("Acme");
+    expect(status.ok).toBe(false);
+    expect(status.message.toLowerCase()).toContain("deployment");
 
     const logs = await executeCommand(
       { kind: "ops", companyName: "Acme", action: "logs" },
       context,
     );
     expect(logs.ok).toBe(false);
-    expect(logs.message).toContain("NOT_IMPLEMENTED");
+    expect(logs.message.toLowerCase()).toContain("deployment");
+
+    // Deferred actions (ssl/domain/deploy) are recognized but never allowed from chat.
+    await expect(
+      executeCommand({ kind: "ops", companyName: "Acme", action: "ssl" }, context),
+    ).rejects.toThrow(AppError);
   });
 });
 

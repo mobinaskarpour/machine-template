@@ -19,7 +19,7 @@ Load knowledge + specification + prompt + blueprint
 → Try reuse current release (same blueprint hash, force:false)
 → Build GenerationPlan
 → Ensure staging dirs
-→ Copy templates/generated-company-os-v1 → staging
+→ Copy templates/generated-company-os-v2 → staging
 → DeterministicTemplateProvider (runtime JSON, mock data, brand CSS)
 → Validate source / deps / routes / coverage / mock integrity
 → npm install → typecheck → test → build (SafeCommandRunner)
@@ -33,7 +33,7 @@ Load knowledge + specification + prompt + blueprint
 | Path | Role |
 |------|------|
 | `templates/machine-demo` | Preserved legacy demo; not used by Phase 4 generation |
-| `templates/generated-company-os-v1` | Phase 4 shell — Next.js **14.2** / Node **18** |
+| `templates/generated-company-os-v2` | Phase 4 shell — Next.js **14.2** / Node **18** |
 
 ## Quality gate
 

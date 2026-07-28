@@ -212,7 +212,7 @@ describe("Generation plan", () => {
 });
 
 describe("Template / workspace", () => {
-  it("hashTemplate succeeds for generated-company-os-v1", async () => {
+  it("hashTemplate succeeds for generated-company-os-v2", async () => {
     const hash = await hashTemplate(process.cwd());
     expect(hash).toMatch(/^[a-f0-9]{16,}$/i);
   });
@@ -226,7 +226,7 @@ describe("Template / workspace", () => {
     const top = await readdir(stagingAppDir);
     expect(top).not.toContain("node_modules");
     expect(top).toContain("package.json");
-    expect(TEMPLATE_RELATIVE_PATH).toContain("generated-company-os-v1");
+    expect(TEMPLATE_RELATIVE_PATH).toContain("generated-company-os-v2");
   });
 
   it("GenerationWorkspace rejects path segments with ..", () => {
@@ -384,6 +384,7 @@ describe("Idempotency", () => {
     const paths = await workspace.ensureDirs(resolved.company.slug);
     const generationId = "gen_reuse_test_01";
     const blueprintHash = blueprint.contentHash ?? "";
+    const templateHash = await hashTemplate(process.cwd());
 
     await writeJsonAtomic(paths.currentGenerationJson, {
       generationId,
@@ -402,7 +403,7 @@ describe("Idempotency", () => {
         blueprintHash,
         specificationHash: "x",
         masterPromptHash: "x",
-        templateHash: "x",
+        templateHash,
       },
       provider: { id: "DETERMINISTIC_TEMPLATE", version: "1.0.0" },
       releasePath: `generated/releases/${generationId}/app`,

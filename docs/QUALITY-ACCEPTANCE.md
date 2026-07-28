@@ -25,4 +25,4 @@ When false, null visual/accessibility become blocking reasons.
 
 ## User messaging
 
-`formatQualityMessage` always states that the application has **not** been deployed (Persian or English). No public URL is invented on accept or reject.
+`formatQualityMessage` states that the application has not been deployed unless a later Phase 6 deploy succeeds (Persian or English). No public URL is invented on accept or reject.

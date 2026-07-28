@@ -1,4 +1,4 @@
-# Security — Phase 0–5
+# Security — Phase 0–6
 
 ## Secrets
 
@@ -83,4 +83,21 @@ Do not store secrets under `data/`, `.factory/` workspace metadata, or job outpu
 
 Phase 5 audits and repairs a generated application in an isolated release workflow. It does not deploy or expose the application publicly.
 
-See also [GENERATED-APP-SECURITY](./GENERATED-APP-SECURITY.md) and [QUALITY-ACCEPTANCE](./QUALITY-ACCEPTANCE.md).
+## Phase 6 additions
+
+- Deployments never bind `0.0.0.0`; `DEPLOYMENT_BIND_ADDRESS` is validated to equal `127.0.0.1` at config load and every pm2/health-check call hard-codes loopback
+- Production dependency audit (`npm audit --omit=dev --json`) blocks on any critical advisory; high advisories block unless the sole affected package is `next` on the pinned `14.2.3x` line, the deployment is loopback-only, and the operator opted in via `DEPLOYMENT_ACCEPT_NEXT_HIGH_LOOPBACK` — recorded as accepted risk `GHSA-NEXT-NODE18-LOOPBACK`, and never applied once public exposure is requested
+- pm2 process names are derived only from the validated company slug (`buildProcessName`), never from raw user text, and are ASCII/hyphen-only and length-bounded
+- pm2 ecosystem configuration is written by the machine to a temporary JSON file — never built from interpolated shell strings
+- Every mutating deployment/operations action is guarded by a per-company file lock (stale locks reclaimed only after a timeout + dead-PID check)
+- `/ops` actions are restricted to `status`, `health`, `logs`, `restart`, `rollback`, `stop`, `start`; `ssl`, `domain`, and `deploy` are always rejected from chat (CLI only)
+- Telegram operators must appear in `TELEGRAM_ADMIN_IDS` (empty allowlist denies every Telegram ops action by default); CLI operators are implicitly trusted (local shell access)
+- Mutating ops actions require confirmation: Telegram issues a single-use, 5-minute token tied to the specific admin + company + action; CLI requires an explicit `--yes`
+- Every ops action (authorized or not) is written to an append-only audit trail under `.factory/operations-audit/`
+- Deployment/health logs are sanitized with the same secret-redaction used elsewhere before being surfaced to any channel
+- Public exposure (reverse proxy + TLS) is never auto-configured — it requires `DEPLOYMENT_PUBLIC_ENABLED`, `NGINX_CONFIG_ROOT`, `DEPLOYMENT_DOMAIN_PATTERN`, and a configured SSL provider; the deploy/predeploy paths throw `DEPLOYMENT_PUBLIC_NOT_CONFIGURED` otherwise
+- `DEMO_AUTO_DEPLOY` only auto-deploys when the requester is CLI or a verified Telegram admin, and only after the pre-deployment gate passes
+
+Phase 6 deploys a quality-accepted release to a local port. Public exposure still requires an operator to configure a reverse proxy, a domain pattern, and a TLS provider.
+
+See also [GENERATED-APP-SECURITY](./GENERATED-APP-SECURITY.md), [QUALITY-ACCEPTANCE](./QUALITY-ACCEPTANCE.md), and [DEPLOYMENT](./DEPLOYMENT.md).
